@@ -9,7 +9,7 @@ invite link "https://discord.com/api/oauth2/authorize?client_id=6195888380751380
 
 Command List
 
-![x](https://cdn.discordapp.com/attachments/526881587682344982/793155186931662868/help.png)
+![x](https://cdn.discordapp.com/attachments/526881587682344982/797775259784445952/help.png)
 
 Example Usage
 
