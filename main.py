@@ -119,11 +119,11 @@ async def osu(ctx, osu_user: str = None):
 
 @bot.command(aliases=['r', 'rs'])
 async def recent(ctx, osu_user: str = None):
-    my_update_bool = None
+    my_update_bool = False
     if osu_user == None:
         discord_id = ctx.message.author.id
         osu_user = get_osu_user_from_db(discord_id)
-        my_update_bool = discord_id
+        my_update_bool = True
     elif len(osu_user) > 20:
         discord_id = int(osu_user.strip('<@!>'))
         osu_user = get_osu_user_from_db(discord_id)
