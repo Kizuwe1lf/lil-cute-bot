@@ -121,8 +121,7 @@ async def osu(ctx, osu_user: str = None):
 async def recent(ctx, osu_user: str = None):
     my_update_bool = False
     if osu_user == None:
-        discord_id = ctx.message.author.id
-        osu_user = get_osu_user_from_db(discord_id)
+        osu_user = get_osu_user_from_db(ctx.message.author.id)
         my_update_bool = True
     elif len(osu_user) > 20:
         discord_id = int(osu_user.strip('<@!>'))
@@ -130,7 +129,7 @@ async def recent(ctx, osu_user: str = None):
     if osu_user == 'User not linked':
         await ctx.send('User not linked')
     else:
-        output = get_recent1(osu_user, ctx.channel.id, my_update_bool)
+        output = get_recent1(osu_user, ctx.channel.id, my_update_bool, ctx.message.author.id)
         try:
             await ctx.send(content=None, embed=output)
         except:

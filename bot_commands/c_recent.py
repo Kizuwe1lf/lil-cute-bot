@@ -6,7 +6,7 @@ import random
 from get_user import *
 
 
-def get_recent1(osu_user, guild_id, my_update_bool):
+def get_recent1(osu_user, guild_id, my_update_bool, discord_id):
     get_user = stuff.get_user(osu_user)
     get_recent = stuff.get_user_recent(osu_user)
     try_counter = 1
@@ -16,8 +16,8 @@ def get_recent1(osu_user, guild_id, my_update_bool):
     if not get_recent:
         return f"~~{get_user[0]['username']}~~ **did not submit anything recently.**"
     else:
-        if my_update_bool == True:
-            update_user(my_update_bool, get_user)
+        if my_update_bool:
+            update_user(discord_id, get_user)
         for x in range(len(get_recent)-1):
             if get_recent[0]['beatmap_id'] == get_recent[x + 1]['beatmap_id'] and get_recent[0]['enabled_mods'] == get_recent[x + 1]['enabled_mods']:
                 try_counter += 1
