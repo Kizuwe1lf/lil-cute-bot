@@ -169,7 +169,7 @@ async def osutop(ctx, osu_user: str = None, p: str = None, play_number: int = 0)
         osu_username = get_osu_user_from_db(discord_id)
     else:
         osu_username = osu_user
-        
+
     if osu_user == 'p':
         play_number = int(p)
     if osu_user == 'p' or p == 'p':
@@ -186,7 +186,7 @@ async def osutop(ctx, osu_user: str = None, p: str = None, play_number: int = 0)
             await ctx.send(content=None, embed=output)
     except:
         await ctx.send(output)
-    
+
 
 
 @bot.command(aliases=['map'])
@@ -212,7 +212,7 @@ async def ntp(ctx, *p ):
     else:
         osu_user = p[0]
         pp_tuple = p[1:]
-        
+
     output = get_ntp(osu_user, pp_tuple)
     try:
         await ctx.send(content=None, embed=output)
@@ -265,14 +265,20 @@ async def leaderboards(ctx):
 
 @bot.command()
 async def link(ctx, osu_user):
-    output = link1(osu_user, ctx.message.author.id)
-    await ctx.send(output)
+    try:
+        output = link1(osu_user, ctx.message.author.id)
+        await ctx.send(output)
+    except:
+        await ctx.send('Something went wront')
 
 
 @bot.command()
 async def unlink(ctx):
-    output = unlink1(ctx.message.author.id)
-    await ctx.send(output)
+    try:
+        output = unlink1(ctx.message.author.id)
+        await ctx.send(output)
+    except:
+        await ctx.send('Something went wrong')
 
 @bot.command()
 async def help(ctx):
@@ -288,17 +294,19 @@ async def aliases(ctx):
 async def roll(ctx, num=""):
     output = get_roll_text(num)
     await ctx.send(f"{ctx.message.author.name} Just rolled **{output}**")
-        
+
 
 
 @bot.command()
 @commands.is_owner()
-async def talkmyboi(ctx, message, channel_id=526881587682344982):
+async def talkmyboi(ctx, channel_id=526881587682344982, *message):
     channel = bot.get_channel(int(channel_id))
-    output = message.replace('--', " ")
+    output = ""
+    for word in message:
+        output += message + " "
     await channel.send(output)
-    
-    
+
+
 @bot.command(aliases=['global'])
 async def g(ctx, mods=""):
     output = get_global_image(ctx.channel.id, mods)
@@ -316,6 +324,6 @@ async def cs(ctx):
         await ctx.send(file=File(output))
     except:
         await ctx.send(output)
-    
-    
+
+
 bot.run(bot_token)
