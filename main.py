@@ -159,7 +159,6 @@ async def c(ctx, osu_user: str = None):
 
 @bot.command()
 async def osutop(ctx, osu_user: str = None, p: str = None, play_number: int = 0):
-    multi_pages = False
     osu_username = ""
     if osu_user == None or osu_user == 'p' or osu_user == 'r':
         discord_id = ctx.message.author.id
@@ -178,12 +177,8 @@ async def osutop(ctx, osu_user: str = None, p: str = None, play_number: int = 0)
         output = get_latest_topplays(osu_username, ctx.message.author)
     else:
         output = osu_top(osu_username, ctx.message.author)
-        multi_pages = True
     try:
-        if multi_pages == True:
-            await send_pages(ctx, output[0], output[1], 5, bot)
-        else:
-            await ctx.send(content=None, embed=output)
+        await ctx.send(content=None, embed=output)
     except:
         await ctx.send(output)
 
@@ -303,7 +298,7 @@ async def talkmyboi(ctx, channel_id=526881587682344982, *message):
     channel = bot.get_channel(int(channel_id))
     output = ""
     for word in message:
-        output += message + " "
+        output += word + " "
     await channel.send(output)
 
 

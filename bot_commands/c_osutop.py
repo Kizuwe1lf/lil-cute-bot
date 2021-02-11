@@ -19,27 +19,24 @@ def osu_top(osu_user, message_author):
             e = discord.Embed(colour=message_author.colour)
             e.set_author(name=f"Top plays for {get_user[0]['username']}\n{get_user[0]['pp_raw']}pp (#{get_user[0]['pp_rank']} {get_user[0]['country']}{get_user[0]['pp_country_rank']})", url=profile_url, icon_url=flag_url)
             e.set_thumbnail(url=avatar_url)
-            page_description = []
-            for page in range(0, 5):
-                info = ""
-                for play_number in range(0, 3):
-                    play_rank = (page * 3) + play_number
-                    player_combo_text = "x"
-                    player_combo_text += get_best_scores[play_rank]['maxcombo']
-                    if int(get_best_scores[play_rank]['perfect']) == 0:
-                        player_combo_text = f"**{player_combo_text}**"
-                    score = get_score(get_best_scores[play_rank]['score'])
-                    beatmap = Beatmaps(get_best_scores[play_rank]['beatmap_id'], get_best_scores[play_rank]['enabled_mods'])
-                    get_beatmaps = stuff.get_beatmaps_osutop_edition(get_best_scores[play_rank]['beatmap_id'])
-                    count = get_best_scores[play_rank]['countmiss'], get_best_scores[play_rank]['count50'], get_best_scores[play_rank]['count100'], get_best_scores[play_rank]['count300']
-                    info += f"**{play_rank + 1}. [{get_beatmaps[0]['title'].replace('*', ' ')} [{get_beatmaps[0]['version']}]]"
-                    info += f"(https://osu.ppy.sh/beatmapsets/{get_beatmaps[0]['beatmapset_id']}#osu/{get_beatmaps[0]['beatmap_id']})\n"
-                    info += f"▸ [{beatmap.get_stars()}★]** +{num_to_mod(get_best_scores[play_rank]['enabled_mods'])} | {score} **-** {get_rank_emote(get_best_scores[play_rank]['rank'])}\n"
-                    info += f"▸ **{int(round(float(get_best_scores[play_rank]['pp'])))}**pp | ** {player_combo_text}/{get_beatmaps[0]['max_combo']}**\n"
-                    info += f"▸ {acc_calculator(*count):0.2f}% | {count[2]}x{get_onehundred_emote()} | {count[1]}x{get_fifty_emote()} | {count[0]}{get_miss_emote()}\n"
-                    info += f"▸ Score Set  {time_ago(datetime.strptime(get_best_scores[play_rank]['date'], '%Y-%m-%d %H:%M:%S'), datetime.utcnow())}\n"
-                page_description.append(info)
-            return e, page_description
+            info = ""
+            for play_rank in range(0, 3):
+                player_combo_text = "x"
+                player_combo_text += get_best_scores[play_rank]['maxcombo']
+                if int(get_best_scores[play_rank]['perfect']) == 0:
+                    player_combo_text = f"**{player_combo_text}**"
+                score = get_score(get_best_scores[play_rank]['score'])
+                beatmap = Beatmaps(get_best_scores[play_rank]['beatmap_id'], get_best_scores[play_rank]['enabled_mods'])
+                get_beatmaps = stuff.get_beatmaps_osutop_edition(get_best_scores[play_rank]['beatmap_id'])
+                count = get_best_scores[play_rank]['countmiss'], get_best_scores[play_rank]['count50'], get_best_scores[play_rank]['count100'], get_best_scores[play_rank]['count300']
+                info += f"**{play_rank + 1}. [{get_beatmaps[0]['title'].replace('*', ' ')} [{get_beatmaps[0]['version']}]]"
+                info += f"(https://osu.ppy.sh/beatmapsets/{get_beatmaps[0]['beatmapset_id']}#osu/{get_beatmaps[0]['beatmap_id']})\n"
+                info += f"▸ [{beatmap.get_stars()}★]** +{num_to_mod(get_best_scores[play_rank]['enabled_mods'])} | {score} **-** {get_rank_emote(get_best_scores[play_rank]['rank'])}\n"
+                info += f"▸ **{int(round(float(get_best_scores[play_rank]['pp'])))}**pp | ** {player_combo_text}/{get_beatmaps[0]['max_combo']}**\n"
+                info += f"▸ {acc_calculator(*count):0.2f}% | {count[2]}x{get_onehundred_emote()} | {count[1]}x{get_fifty_emote()} | {count[0]}{get_miss_emote()}\n"
+                info += f"▸ Score Set  {time_ago(datetime.strptime(get_best_scores[play_rank]['date'], '%Y-%m-%d %H:%M:%S'), datetime.utcnow())}\n"
+            e.description = info
+            return e
         except:
             return "Something went wrong"
 
@@ -73,10 +70,8 @@ def get_specific_play(osu_user, message_author, guild_id, given_play):
             info += f"▸ **{int(round(float(get_best_scores[given_play - 1]['pp'])))}**pp | {fc_pp} ** {player_combo_text}/{get_beatmaps[0]['max_combo']}**\n"
             info += f"▸ {acc_calculator(*count):0.2f}% | {count[2]}x{get_onehundred_emote()} | {count[1]}x{get_fifty_emote()} | {count[0]}{get_miss_emote()}\n"
             info += f"▸ Score Set  {time_ago(datetime.strptime(get_best_scores[given_play - 1]['date'], '%Y-%m-%d %H:%M:%S'), datetime.utcnow())}\n"
-            nomod_accs = beatmap.get_accuracy_pps()
-            footer_text = f"95%: {nomod_accs[0]}pp | 98%: {nomod_accs[1]}pp"
-            footer_text += f" | 99%: {nomod_accs[2]}pp | 100%: {nomod_accs[3]}pp"
-            e.set_footer(text=footer_text)
+            # footer_text = f" idk what to put here"
+            # e.set_footer(text=footer_text)
             e.set_thumbnail(url=f"https://a.ppy.sh/{get_user[0]['user_id']}")
             try:
                 e.set_image(url=f"https://assets.ppy.sh/beatmaps/{get_beatmaps[0]['beatmapset_id']}/covers/cover.jpg")
@@ -94,8 +89,8 @@ def get_latest_topplays(osu_user, message_author):
     dates = {}
     if not get_user:  return f"~~{osu_user}~~ **was not found.**"
     try:
-        for x in range(len(get_best_scores)):
-            dates[x] = [get_best_scores[x]['date']]
+        for play in range(len(get_best_scores)):
+            dates[play] = [get_best_scores[play]['date']]
         play_list = nlargest(5, dates, key=dates.get)
         info = ""
         flag_url = f"https://osu.ppy.sh/images/flags/{get_user[0]['country']}.png"

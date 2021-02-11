@@ -56,27 +56,9 @@ class Beatmaps:
         bmap = self.bmap
         data = [bmap.cs, bmap.ar, bmap.od, bmap.hp]
         return data
+        
 
-    def get_accuracy_pps(self):
-        pp_list = []
-        acc_list = [95, 98, 99, 100]
-        for x in range(4):
-            aim = self.stars.aim
-            speed = self.stars.speed
-            n300, n100, n50 = osu.acc_round(acc_list[x], len(self.bmap.hitobjects), 0)
-            pp, aim_pp, speed_pp, acc_pp, accuraccy = osu.ppv2(
-                aim_stars=aim, speed_stars=speed,
-                n300=n300,
-                n50=n50,
-                n100=n100,
-                nmiss=0,
-                bmap=self.bmap, mods=self.mods, combo=self.bmap.max_combo())
-
-            pp_list.append(round(pp, 2))
-        return pp_list
-
-
-def acc_calculator(x, y, z, c): # x,y,z,c  miss 50 100 300 
+def acc_calculator(x, y, z, c): # x,y,z,c  miss 50 100 300
     total_score = float(y)
     total_score += float(z)
     total_score += float(c)
@@ -88,7 +70,7 @@ def acc_calculator(x, y, z, c): # x,y,z,c  miss 50 100 300
     return float(user_score) * 100 / float(total_score)
 
 
-def no_choke_acc(x, y, z, c): # x,y,z,c  miss 50 100 300 
+def no_choke_acc(x, y, z, c): # x,y,z,c  miss 50 100 300
     total_score = float(y)
     total_score += float(z)
     total_score += float(c)
@@ -105,7 +87,7 @@ def num_to_mod(number):
     mod_list = []
     number = int(number)
     if number == 0:
-        mod_list.append('No Mod,')
+        mod_list.append('No Mod')
         return ''.join(mod_list)
     if   number & 1 << 0:   mod_list.append('NF')
     if   number & 1 << 1:   mod_list.append('EZ')
@@ -113,9 +95,9 @@ def num_to_mod(number):
     if   number & 1 << 3:   mod_list.append('HD')
     if   number & 1 << 4:   mod_list.append('HR')
     if   number & 1 << 5:   mod_list.append('SD')
-    if   number & 1 << 9:   
+    if   number & 1 << 9:
         mod_list.append('NC')
-    elif number & 1 << 6:   
+    elif number & 1 << 6:
         mod_list.append('DT')
     if   number & 1 << 7:   mod_list.append('RX')
     if   number & 1 << 8:   mod_list.append('HT')
@@ -139,7 +121,7 @@ def num_to_mod_image(number):
     if   number & 1 << 4:   mod_list.append('HR,')
     if   number & 1 << 5:   mod_list.append('SD,')
     if   number & 1 << 12:  mod_list.append('SO,')
-    if   number & (( 1 << 9 ) + ( 1 << 6 )) == 576:   
+    if   number & (( 1 << 9 ) + ( 1 << 6 )) == 576:
         mod_list.append('NC,')
     elif number & (( 1 << 9 ) + ( 1 << 6 )) == 64:
         mod_list.append('DT,')
@@ -151,7 +133,7 @@ def num_to_mod_image(number):
     if   number & 1 << 20:  mod_list.append('FI,')
     if   number & 1 << 29:  mod_list.append('v2,')
     return ''.join(mod_list)
-    
+
 def mod_to_num(mods: str):
     mods = mods.upper()
     total = 0
@@ -172,8 +154,26 @@ def mod_to_num(mods: str):
     if   'PF' in mods:    total += 1 << 14
     if   'FI' in mods:    total += 1 << 20
     if   'v2' in mods:    total += 1 << 29
-       
-    return int(total) 
+
+    return int(total)
+
+
+def num_to_num_diff_inc_mods_only(number): # weee i dont use that
+    total = 0
+    if   number & 1 << 4:
+        total += 1 << 4
+    if   number & 1 << 1:
+        total += 1 << 1
+    if  number & 1 << 9:
+        total += 1 << 6
+    elif number & 1 << 6:
+        total += 1 << 6
+    if number & 1 << 8:
+        total += 1 << 8
+
+    return total
+
+
 
 
 def get_fifty_emote():
