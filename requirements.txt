@@ -1,1 +1,5 @@
-gonna update this later
+discord.py==1.4.1
+requests==2.25.1
+numpy==1.19.5
+pyttanko==2.1.0
+Pillow==8.1.2

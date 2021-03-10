@@ -48,8 +48,6 @@ def spot_beatmap(guild_id, beatmap_id: str = None):
     total_len = get_len(int(get_beatmaps[0]['total_length']))
     objectz = [int(get_beatmaps[0]['count_normal']), int(get_beatmaps[0]['count_slider']), int(get_beatmaps[0]['count_spinner']), ]
     obj = objectz[0] + objectz[1] + objectz[2]
-    dt_accs = beatmap_with_dt.get_accuracy_pps()
-    nomod_accs = beatmap.get_accuracy_pps()
 
     info = ""
     info += f"**[{get_beatmaps[0]['artist']} - {get_beatmaps[0]['title'].replace('*', ' ')} \n [{get_beatmaps[0]['version']}]]"
@@ -57,9 +55,6 @@ def spot_beatmap(guild_id, beatmap_id: str = None):
     info += f"**Length:** `{total_len[0]}:{total_len[1]}` (`{hit_len[0]}:{hit_len[1]}`) **BPM:** `{get_beatmaps[0]['bpm']}` **Objects:** `{obj}`\n \n"
     info += f"**Circles:** `{objectz[0]}` **Sliders:** `{objectz[1]}` **Spinners:** `{objectz[2]}`\n"
     info += f"**CS:** `{beatmap_data[0]}` **AR:** `{beatmap_data[1]}` **OD:** `{beatmap_data[2]}` **HP:** `{beatmap_data[3]}` **SR:** `{beatmap.get_stars()}` (`{beatmap_with_dt.get_stars()}` DT) **MaxCombo:** `{get_beatmaps[0]['max_combo']}`\n \n"
-    info += f"**Performance Points NoMod-DT** \n"
-    info += f"`NM` 95%: {nomod_accs[0]}pp | 99%: {nomod_accs[2]}pp | 100%: {nomod_accs[3]}pp\n"
-    info += f"`DT` 95%: {dt_accs[0]}pp | 99%: {dt_accs[2]}pp | 100%: {dt_accs[3]}pp"
 
     footer_text = ""
     footer_text += f"{get_beatmap_status(int(get_beatmaps[0]['approved']))} | {get_beatmaps[0]['favourite_count']} ❤"

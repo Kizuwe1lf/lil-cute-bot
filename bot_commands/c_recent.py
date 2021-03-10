@@ -18,7 +18,8 @@ def get_recent1(osu_user, guild_id, my_update_bool, discord_id):
     else:
         if my_update_bool: # if message_owner = osu_user also in db_users im gonna update his db stats
             update_user(discord_id, get_user)
-        for x in range(len(get_recent)-1):
+
+        for x in range(len(get_recent)-1): # get Try counter by checking other recent plays
             if get_recent[0]['beatmap_id'] == get_recent[x + 1]['beatmap_id'] and get_recent[0]['enabled_mods'] == get_recent[x + 1]['enabled_mods']:
                 try_counter += 1
             else:
