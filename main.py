@@ -234,10 +234,10 @@ async def bpp(ctx, osu_user: str = None):
         await ctx.send(output)
 
 @bot.command()
-async def acc(ctx, counter50, counter100, mod:str = 'No Mod'):
+async def acc(ctx, count50, count100, mod:str = 'No Mod'):
     try:
-        counter50 = int(counter50)
-        counter100 = int(counter100)
+        count50 = int(count50)
+        count100 = int(count100)
     except:
         await ctx.send("invalid 50&100 Counts")
     output = get_acc(counter50, counter100, ctx.channel.id, mod)

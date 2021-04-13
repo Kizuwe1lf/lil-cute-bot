@@ -2,7 +2,7 @@ from bot_commands.c_main import stuff
 from scripts import *
 
 
-def get_acc(counter50, counter100, guild_id, mods:str = 'No Mod'):
+def get_acc(count50, count100, guild_id, mods:str = 'No Mod'):
     try:
         beatmap_id = stuff.get_beatmap_id(guild_id)
         if not beatmap_id: return f"Theres no ~~beatmap_id~~ in cache"
