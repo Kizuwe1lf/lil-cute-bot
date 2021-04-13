@@ -59,7 +59,7 @@ def get_recent1(osu_user, guild_id, my_update_bool, discord_id):
 
         if map_comp > 85:
             if int(get_beatmaps[0]['max_combo']) - int(get_recent[0]['maxcombo']) > 6 or int(count[0]) > 0 or get_recent[0]['rank'] == 'F': # add if fc pp to text if not fced
-                fc_pp = get_if_fc_pp_text(get_if_fc_pp(get_recent[0]['beatmap_id'], mods_list, count))
+                fc_pp = get_if_fc_pp_text(get_if_fc_pp(get_recent[0]['beatmap_id'], mods_list, count)['pp'])
 
         player_combo_text = f"x{get_recent[0]['maxcombo']}"
         if get_recent[0]['perfect'] == "0": # make player combo text bold if max combo achieved
