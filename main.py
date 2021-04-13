@@ -185,8 +185,11 @@ async def osutop(ctx, osu_user: str = None, p: str = None, play_number: int = 0)
 
 
 @bot.command(aliases=['map'])
-async def mapdata(ctx, beatmap_id: str =  None):
-    output = spot_beatmap(ctx.channel.id, beatmap_id)
+async def mapdata(ctx, beatmap_id: str = None, mods: str = 'No Mod'):
+    if beatmap_id != None and beatmap_id.isnumeric() == False:
+        mods = beatmap_id
+        beatmap_id = None
+    output = spot_beatmap(ctx.channel.id, beatmap_id, mods)
     try:
         await ctx.send(embed=output)
     except:
@@ -231,23 +234,14 @@ async def bpp(ctx, osu_user: str = None):
         await ctx.send(output)
 
 @bot.command()
-async def acc(ctx, accuracy, *mod):
+async def acc(ctx, counter50, counter100, mod:str = 'No Mod'):
     try:
-        accuracy = float(accuracy)
+        counter50 = int(counter50)
+        counter100 = int(counter100)
     except:
-        await ctx.send("invalid accuracy!")
-    if 100 >= accuracy > 49.99:
-        if not mod:
-            output = get_acc(accuracy, ctx.channel.id)
-        else:
-            if "ez" in mod[0].lower() and "hr" in mod[0].lower() or "ht" in mod[0].lower() and "dt" in mod[0].lower():
-                output = "invalid mods!"
-            else:
-                output = get_acc(accuracy, ctx.channel.id, mod[0])
-        await ctx.send(output)
-    else:
-        await ctx.send("invalid accuracy!")
-
+        await ctx.send("invalid 50&100 Counts")
+    output = get_acc(counter50, counter100, ctx.channel.id, mod)
+    await ctx.send(output)
 
 @bot.command()
 async def leaderboards(ctx):
@@ -303,7 +297,7 @@ async def talkmyboi(ctx, channel_id=526881587682344982, *message):
 
 
 @bot.command(aliases=['global'])
-async def g(ctx, mods=""):
+async def g(ctx, mods='No Mod'):
     output = get_global_image(ctx.channel.id, mods)
     try:
         await ctx.send(file=File(output))
