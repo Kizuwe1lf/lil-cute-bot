@@ -65,6 +65,9 @@ def get_recent1(osu_user, guild_id, my_update_bool, discord_id):
         if get_recent[0]['perfect'] == "0": # make player combo text bold if max combo achieved
             player_combo_text = f"**{player_combo_text}**"
 
+        if fc_pp == "" and pp_text == "":
+            pp_text = f"<:msmile:586586198588522519> **-{random.randint(100, 500)}**pp"
+
         r_g_b = get_avg_colour_from_cover(get_beatmaps[0]['beatmapset_id'])  # get average rgb value from beatmap cover image
         e = discord.Embed(color=discord.colour.Colour.from_rgb(r_g_b[0], r_g_b[1], r_g_b[2]))
 
