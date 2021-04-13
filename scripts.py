@@ -1,64 +1,79 @@
 import asyncio
 import database
 from downloader import *
+import pyttanko as osu
+import os
+from subprocess import Popen, PIPE
+import json
 
 
-class Beatmaps:
-    def __init__(self, beatmap_id, mods=0):
-        self.bmap = download_beatmaps(beatmap_id)
-        self.stars = osu.diff_calc().calc(self.bmap, int(mods))
-        self.mods = mods
+def get_map_completion(beatmap_id, total_hits):
+    osu_map_path =  get_beatmap_path(beatmap_id)
 
-    def get_mapcompletion(self, totalhits=0): # obj = object
+    p = osu.parser() #
+    with open(os.path.join(osu_map_path), "r", encoding="utf-8") as f:
+        bmap = p.map(f)
+
         hitobj = []
-        if totalhits == 0:
-            totalhits = len(self.bmap.hitobjects)
-        numobj = totalhits - 1
-        num = len(self.bmap.hitobjects)
-        for objects in self.bmap.hitobjects:
+        if total_hits == 0:
+            total_hits = len(bmap.hitobjects)
+        numobj = total_hits - 1
+        num = len(bmap.hitobjects)
+        for objects in bmap.hitobjects:
             hitobj.append(objects.time)
         timing = int(hitobj[num - 1]) - int(hitobj[0])
         point = int(hitobj[numobj]) - int(hitobj[0])
         map_completion = (point / timing) * 100
-        return round(map_completion, 2)
 
-    def get_if_fc_pp(self, acc):
-        aim = self.stars.aim
-        speed = self.stars.speed
-        n300, n100, n50 = osu.acc_round(acc, len(self.bmap.hitobjects), 0)
-        pp, aim_pp, speed_pp, acc_pp, accuraccy = osu.ppv2(
-            aim_stars=aim, speed_stars=speed,
-            n300=n300,
-            n50=n50,
-            n100=n100,
-            nmiss=0,
-            bmap=self.bmap, mods=self.mods, combo=self.bmap.max_combo())
-        output = f"IF FC: **{int(round(pp))}**pp |"
-        return output
+    return round(map_completion, 2)
 
-    def get_pp(self, maxcombo, miss, n50, n100, n300):
-        aim = self.stars.aim
-        speed = self.stars.speed
-        pp, aim_pp, speed_pp, acc_pp, accuraccy = osu.ppv2(
-            aim_stars=aim, speed_stars=speed,
-            n300=int(n300),
-            n50=int(n50),
-            n100=int(n100),
-            nmiss=int(miss),
-            bmap=self.bmap, mods=self.mods, combo=maxcombo)
-        output = f"**{int(round(pp))}**pp |"
-        return output
+def calc(param):
+    calc_path = ["pp_calculator/PerformanceCalculator.exe"]
+    process = Popen(calc_path + param, stdout=PIPE)
+    output = process.communicate()[0]
+    return json.loads(output)
 
-    def get_stars(self):
-        return round(self.stars.total, 2)
+def get_difficulty(beatmap_id, mods_list):
+    bmap_path = get_beatmap_path(beatmap_id)
+    param = ['difficulty', bmap_path]
+    if len(mods_list[0]) < 4: # Not including no mod
+        for mod in mods_list:
+            param.append(f'-m {mod}')
+    return calc(param)['sr']
 
-    def get_beatmap_data(self):
-        bmap = self.bmap
-        data = [bmap.cs, bmap.ar, bmap.od, bmap.hp]
-        return data
-        
+def get_pp(beatmap_id, mods_list, maxcombo, count): # count has [miss, 50, 100, 300] counts
+    bmap_path = get_beatmap_path(beatmap_id)
+    param = ['simulate', 'osu', bmap_path, f'-c {maxcombo}', f'-X {count[0]}', f'-M {count[1]}', f'-G {count[2]}']
+    if len(mods_list[0]) < 4: # Not including no mod
+        for mod in mods_list:
+            param.append(f'-m {mod}')
+    output = calc(param)
+    return output
 
-def acc_calculator(x, y, z, c): # x,y,z,c  miss 50 100 300
+def get_if_fc_pp(beatmap_id, mods_list, count):
+    bmap_path = get_beatmap_path(beatmap_id)
+    param = ['simulate', 'osu', bmap_path, f'-M {count[1]}', f'-G {count[2]}'] #excluding misses
+    if len(mods_list[0]) < 4: # Not including no mod
+        for mod in mods_list:
+            param.append(f'-m {mod}')
+    output = calc(param)
+    return output
+
+def get_beatmap_data(beatmap_id, mods_list):
+    bmap_path = get_beatmap_path(beatmap_id)
+    param = ['difficulty', bmap_path]
+    if len(mods_list[0]) < 4: # Not including no mod
+        for mod in mods_list:
+            param.append(f'-m {mod}')
+    return calc(param)
+
+def get_if_fc_pp_text(pp):
+    return f"IF FC : **{pp}**pp |"
+
+def get_pp_text(pp):
+    return f"**{pp}**pp |"
+
+def calc_accuracy(x, y, z, c): # x,y,z,c  miss 50 100 300
     total_score = float(y)
     total_score += float(z)
     total_score += float(c)
@@ -67,28 +82,14 @@ def acc_calculator(x, y, z, c): # x,y,z,c  miss 50 100 300
     user_score = float(y) * 50
     user_score += float(z) * 100
     user_score += float(c) * 300
-    return float(user_score) * 100 / float(total_score)
+    return round( (float(user_score) * 100 / float(total_score)) ,2)
 
-
-def no_choke_acc(x, y, z, c): # x,y,z,c  miss 50 100 300
-    total_score = float(y)
-    total_score += float(z)
-    total_score += float(c)
-    total_score += float(x)
-    total_score *= 300
-    user_score = float(y) * 50
-    user_score += float(z) * 100
-    user_score += float(c) * 300
-    user_score += float(x) * 100
-    return float(user_score) * 100 / float(total_score)
-
-
-def num_to_mod(number):
+def num_to_mod_list(number):
     mod_list = []
     number = int(number)
     if number == 0:
         mod_list.append('No Mod')
-        return ''.join(mod_list)
+        return mod_list
     if   number & 1 << 0:   mod_list.append('NF')
     if   number & 1 << 1:   mod_list.append('EZ')
     if   number & 1 << 2:   mod_list.append('TD')
@@ -106,37 +107,12 @@ def num_to_mod(number):
     if   number & 1 << 14:  mod_list.append('PF')
     if   number & 1 << 20:  mod_list.append('FI')
     if   number & 1 << 29:  mod_list.append('v2')
-    return ''.join(mod_list)
-
-def num_to_mod_image(number):
-    mod_list = []
-    number = int(number)
-    if number == 0:
-        mod_list.append('No Mod,')
-        return ''.join(mod_list)
-    if   number & 1 << 0:   mod_list.append('NF,')
-    if   number & 1 << 1:   mod_list.append('EZ,')
-    if   number & 1 << 2:   mod_list.append('TD,')
-    if   number & 1 << 3:   mod_list.append('HD,')
-    if   number & 1 << 4:   mod_list.append('HR,')
-    if   number & 1 << 5:   mod_list.append('SD,')
-    if   number & 1 << 12:  mod_list.append('SO,')
-    if   number & (( 1 << 9 ) + ( 1 << 6 )) == 576:
-        mod_list.append('NC,')
-    elif number & (( 1 << 9 ) + ( 1 << 6 )) == 64:
-        mod_list.append('DT,')
-    if   number & 1 << 7:   mod_list.append('RX,')
-    if   number & 1 << 8:   mod_list.append('HT,')
-    if   number & 1 << 10:  mod_list.append('FL,')
-    if   number & 1 << 12:  mod_list.append('SO,')
-    if   number & 1 << 14:  mod_list.append('PF,')
-    if   number & 1 << 20:  mod_list.append('FI,')
-    if   number & 1 << 29:  mod_list.append('v2,')
-    return ''.join(mod_list)
+    return mod_list
 
 def mod_to_num(mods: str):
     mods = mods.upper()
     total = 0
+    if   'No Mod' in mods: return total
     if   'NF' in mods:    total += 1 << 0
     if   'EZ' in mods:    total += 1 << 1
     if   'TD' in mods:    total += 1 << 2
@@ -210,11 +186,6 @@ def get_rank_emote(rank):
 
     return rank
 
-
-def get_beatmap_image_url(beatmap_id):
-    return f"https://b.ppy.sh/thumb/{beatmap_id}l.jpg"
-
-
 def time_ago(play_time, base_time):
     totalseconds = (base_time - play_time).total_seconds()
     total_minutes = totalseconds / 60
@@ -245,21 +216,39 @@ def time_ago(play_time, base_time):
             return f"**{int(total_years)} years** ago"
 
 def get_score(score):
-    stringscore = str(score)
-    score = ""
-    counter = 3 - (len(stringscore) % 3)
-    i = 0
-    while i < len(stringscore):
-        score += stringscore[i]
-        counter += 1
-        if counter % 3 == 0:
-            score += ","
-        i += 1
-    return score[:-1]
+    return '{:,}'.format(int(score))
 
 
 def get_total_hours_played(seconds):
     return int(round(int(seconds) / 60 / 60))
+
+def check_if_mods_are_invalid(mods): # works with str_mods and list_mods  ex: 'HDDTEZ' or ['HD', 'DT', 'EZ']
+    if 'No Mod' in mods and mods != 'No Mod' and len(mods) > 1:
+        return 0
+    if 'DT' in mods or 'NC' in mods:
+        if 'HT' in mods:  # DT or NC and HT
+            return 0
+        elif 'DT' in mods and 'NC' in mods: # DT and NC
+            return 0
+    if 'HR' in mods and 'EZ' in mods: # HR and EZ
+        return 0
+    if 'SD' in mods or 'PF' in mods:
+        if 'SD' in mods and 'PF' in mods: # SD and PF
+            return 0
+        elif 'NF' in mods: # SD or PF and NF
+            return 0
+
+    return 1 # Poggers
+
+def get_mod_list_from_mods_string(mods):
+    if mods == 'No Mod':
+        mods_list = ['No Mod']
+    else:
+        mods_list = []
+        while mods:
+            mods_list.append(mods[:2].upper())
+            mods = mods[2:]
+    return mods_list
 
 
 async def send_pages(ctx, e, info, total_pages, bot):
