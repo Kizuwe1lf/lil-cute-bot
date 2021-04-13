@@ -1,6 +1,5 @@
 import random
 
-
 def get_roll_text(num):
     try:
         output = random.randint(1, int(num))
