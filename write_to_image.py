@@ -12,14 +12,14 @@ def write_to_image(scores, get_beatmaps):
         score_count = len(scores)
         if len(scores) == 0:
             return "There are no scores :("
-            
+
     height = 255 + (score_count * 110)
     width = 1200
     rank_area = (111, 14)
     score_area = (177, 50)
     pp_area = (700, 50)
     mod_area= (940, 50)
-    
+
     nick_area = (177, 6)
     date_time_area = (940, 6)
     accuracy_area = (700, 6)
@@ -40,17 +40,16 @@ def write_to_image(scores, get_beatmaps):
 
     i = 0
     while i < score_count: # Writing Score Variables in this loop
-        
-        
-        mod_text = str(num_to_mod_image(scores[i]['enabled_mods']))
-        mod_text = mod_text[:-1]
-        
+
+        mods_list = num_to_mod_list(scores[i]['enabled_mods'])
+        mods_text = ''.join(mods_list)
+
         count = [scores[i]['countmiss'], scores[i]['count50'], scores[i]['count100'], scores[i]['count300']]
-        accuracy_text = acc_calculator(*count)
-        
+        accuracy_text = calc_accuracy(*count)
+
         score_date = datetime.strptime(scores[i]['date'], '%Y-%m-%d %H:%M:%S')
         score_date = score_date.strftime('%m-%d-%Y')
-        
+
         misstext = ""
         if int(scores[i]['countmiss']) > 0:
             misstext = f"{scores[i]['countmiss']}x"
@@ -59,22 +58,25 @@ def write_to_image(scores, get_beatmaps):
         draw = ImageDraw.Draw(score)
         draw.text(nick_area, f"{scores[i]['username']}", font_colour, font=font)
         draw.text(score_area, f"{score_text_} ({scores[i]['maxcombo']}x) {misstext}", font_colour, font=font)
-        draw.text(mod_area, f"{mod_text}", mod_font_colour, font=font)
-        try:
-            draw.text(pp_area, f"{float(scores[i]['pp']):0.2f}pp", font_colour, font=font)
-        except:
-            accuracy_area = pp_area
+        draw.text(mod_area, f"{mods_text}", mod_font_colour, font=font)
+
+        if scores[i]['pp'] is not None:
+            pp_text = round(float(scores[i]['pp']), 2)
+        else:
+            pp_text = get_pp(get_beatmaps[0]['beatmap_id'], mods_list, scores[i]['maxcombo'], count)['pp']
+
+        draw.text(pp_area, f"{pp_text}pp", font_colour, font=font)
         draw.text(date_time_area, f"{score_date}", font_colour, font=font)
-        draw.text(accuracy_area, f"{accuracy_text:0.2f}%", font_colour, font=font)
-        
+        draw.text(accuracy_area, f"{accuracy_text}%", font_colour, font=font)
+
 
         rank = Image.open(f"my_files/global_materials/{scores[i]['rank']}.png")
         score.paste(rank, rank_area, rank)
-        
-        avatar = download_avatar(scores[i]['user_id'])
+
+        avatar = get_user_avatar(scores[i]['user_id'])
         position = 155 + ( i * 110 )
         img.paste(avatar, (13, position + 8))
-        img.paste(score, (0, position), score) 
+        img.paste(score, (0, position), score)
         i += 1
 
 
