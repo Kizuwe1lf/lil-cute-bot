@@ -129,7 +129,3 @@ dmypy.json
 .pyre/
 
 
-my_files/
-beatmap_folder/
-beatmap_covers/
-/secrets.py
