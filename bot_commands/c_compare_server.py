@@ -3,26 +3,20 @@ from write_to_image import *
 from database import *
 
 
-def get_compare_server_image(ctx):
-    guild_id = ctx.channel.id
-    beatmap_id = stuff.get_beatmap_id(guild_id)
-    if not beatmap_id: return f"Theres no ~~beatmap_id~~ in cache"
+async def commands_compare_server(ctx, db_obj):
+    beatmap_id = stuff.get_beatmap_id(ctx.channel.id)
+    if not beatmap_id:
+        await ctx.send(f"Theres no ~~beatmap_id~~ in cache")
+        return 0
 
+    members = db_obj.select_players_by_server(ctx.guild.id)
+    scores = []
 
-    db_object = Database()
-    discord_id_list = []
-
-    for member in ctx.guild.members:
-        discord_id_list.append(member.id)
-
-    member_list = db_object.multiple_select_from_database(discord_id_list)
-
-    data = []
-
-    for member in member_list:
-        get_scores = stuff.get_scores(member[1], beatmap_id, guild_id)
+    for member in members:
+        get_scores = stuff.get_scores(member['osu_user_id'], beatmap_id, ctx.channel.id)
         if get_scores:
-            data.append(get_scores[0])
-    data.sort(key=lambda x:int(x['score']), reverse= True)
-    get_beatmaps = stuff.get_beatmaps(beatmap_id, guild_id)
-    return write_to_image(data, get_beatmaps)
+            scores.append(get_scores[0])
+
+    scores = sorted(scores, key=lambda x:int(x['score']), reverse= True)
+    get_beatmaps = stuff.get_beatmaps(beatmap_id, ctx.channel.id)
+    await write_to_image(ctx, scores, get_beatmaps)
