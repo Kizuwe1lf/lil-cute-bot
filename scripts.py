@@ -1,10 +1,10 @@
 import asyncio
-import database
 from downloader import *
 import pyttanko as osu
 import os
 from subprocess import Popen, PIPE
 import json
+import discord
 
 
 def get_map_completion(beatmap_id, total_hits):
@@ -24,8 +24,7 @@ def get_map_completion(beatmap_id, total_hits):
         timing = int(hitobj[num - 1]) - int(hitobj[0])
         point = int(hitobj[numobj]) - int(hitobj[0])
         map_completion = (point / timing) * 100
-
-    return round(map_completion, 2)
+    return round_func(map_completion)
 
 def calc(param):
     calc_path = ["pp_calculator/PerformanceCalculator.exe"]
@@ -82,7 +81,7 @@ def calc_accuracy(x, y, z, c): # x,y,z,c  miss 50 100 300
     user_score = float(y) * 50
     user_score += float(z) * 100
     user_score += float(c) * 300
-    return round( (float(user_score) * 100 / float(total_score)) ,2)
+    return round_func(float(user_score) * 100 / float(total_score))
 
 def num_to_mod_list(number):
     mod_list = []
@@ -250,6 +249,26 @@ def get_mod_list_from_mods_string(mods):
             mods = mods[2:]
     return mods_list
 
+def round_func(val): # rounds with 2 dec ex: 3 = 3.00 ---- 3.5556 = 3.55
+    return f"{float(val):0.2f}"
+
+async def send_embed(ctx, e):
+    await ctx.send(content=None, embed=e)
+
+def get_osu_username_from_param(ctx, player, db_obj):
+    update_bool = False
+    if player == None:
+        discord_id = ctx.message.author.id
+        player = db_obj.select_players_by_id(discord_id)
+        update_bool = True
+    elif len(player) > 20:
+        discord_id = int(player.strip('<@!>'))
+        player = db_obj.select_players_by_id(discord_id)
+    else:
+        player = {
+            "osu_username" : player
+        }
+    return player, update_bool
 
 async def send_pages(ctx, e, info, total_pages, bot):
     cur_page = 1
