@@ -3,15 +3,17 @@ import json
 from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime
 from scripts import *
+from discord import File
 from bot_commands.c_main import stuff
 
 
-def write_to_image(scores, get_beatmaps):
+async def write_to_image(ctx, scores, get_beatmaps):
     score_count = 8
     if len(scores) < 8:
         score_count = len(scores)
         if len(scores) == 0:
-            return "There are no scores :("
+            await ctx.send("There are no scores <:aquaCry:700623201880899604>")
+            return 0
 
     height = 255 + (score_count * 110)
     width = 1200
@@ -45,7 +47,7 @@ def write_to_image(scores, get_beatmaps):
         mods_text = ''.join(mods_list)
 
         count = [scores[i]['countmiss'], scores[i]['count50'], scores[i]['count100'], scores[i]['count300']]
-        accuracy_text = calc_accuracy(*count)
+        accuracy_text = round_func(calc_accuracy(*count))
 
         score_date = datetime.strptime(scores[i]['date'], '%Y-%m-%d %H:%M:%S')
         score_date = score_date.strftime('%m-%d-%Y')
@@ -61,7 +63,7 @@ def write_to_image(scores, get_beatmaps):
         draw.text(mod_area, f"{mods_text}", mod_font_colour, font=font)
 
         if scores[i]['pp'] is not None:
-            pp_text = round(float(scores[i]['pp']), 2)
+            pp_text = round_func(scores[i]['pp'])
         else:
             pp_text = get_pp(get_beatmaps[0]['beatmap_id'], mods_list, scores[i]['maxcombo'], count)['pp']
 
@@ -85,4 +87,4 @@ def write_to_image(scores, get_beatmaps):
     draw.text((15, 23), f"Beatmap by {get_beatmaps[0]['creator']}", font_colour, font=title_font)
     img.paste(footer, (0, position + 110))
     img.save('my_files/global_materials/output.png')
-    return 'my_files/global_materials/output.png'
+    await ctx.send(file=File('my_files/global_materials/output.png'))
