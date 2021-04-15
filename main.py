@@ -1,41 +1,47 @@
 import json
 import discord
+import os
+from dotenv import load_dotenv, find_dotenv
 from discord import File
 from discord.ext import commands
 from discord.ext.commands import has_permissions
-from bot_commands.c_compare import compare
-from bot_commands.c_osu import get_user1
-from bot_commands.c_recent import get_recent1
-from bot_commands.c_osutop import *
-from bot_commands.c_roll import get_roll_text
-from bot_commands.c_map_data import spot_beatmap
-from bot_commands.c_ntp import get_ntp
-from bot_commands.c_acc import get_acc
-from database import *
-from bot_commands.c_link import *
-from bot_commands.c_leaderboards import *
-from secrets import bot_token
-from get_user import get_osu_user_from_db
-from bot_commands.c_bpp import get_bpp
-from bot_commands.c_global import get_global_image
-from bot_commands.c_compare_server import get_compare_server_image
 
+# my files
+
+from bot_commands.c_osu import commands_osu
+from bot_commands.c_recent import commands_recent
+from bot_commands.c_compare import commands_compare
+from bot_commands.c_osutop import commands_osutop, commands_osutop_r, commands_osutop_p
+from bot_commands.c_link_unlink import commands_link, commands_unlink
+from bot_commands.c_ntp import commands_ntp
+from bot_commands.c_bpp import commands_bpp
+from bot_commands.c_acc import commands_acc
+from bot_commands.c_map import commands_map
+from bot_commands.c_leaderboards import commands_leaderboards
+from bot_commands.c_global import commands_global
+from bot_commands.c_compare_server import commands_compare_server
+from bot_commands.c_roll import commands_roll
+from database import Database
+from scripts import get_osu_username_from_param
 
 # Hey!
 
 
 def get_prefix(ctx, message):
-    with open(r"my_files/server_prefixes.json", "r") as f:
-        prefix_list = json.load(f)
-    try:
-        return prefix_list[str(message.guild.id)]
-    except:
-        return '>'
-
+    db_obj = Database()
+    return db_obj.get_prefix(message.guild.id)[0]
 
 
 bot = commands.Bot(command_prefix=get_prefix)
 bot.remove_command('help')
+
+
+@bot.command()
+@has_permissions(administrator=True)
+async def setprefix(ctx, prefix):
+    db_obj = Database()
+    db_prefix = db_obj.set_prefix(ctx.guild.id, prefix)
+    await ctx.send(f"Done new prefix = '{db_prefix}' for {ctx.guild.name} from now on")
 
 
 @bot.event
@@ -89,185 +95,109 @@ async def leaveserver(ctx, rank):
 
 
 @bot.command()
-@has_permissions(administrator=True)
-async def setprefix(ctx, prefix):
-    with open(r"my_files/server_prefixes.json", "r") as f:
-        prefix_list = json.load(f)
-    prefix_list[str(ctx.guild.id)] = prefix
-    with open(r"my_files/server_prefixes.json", "w") as f:
-        json.dump(prefix_list, f, indent=4)
-    await ctx.send(f"Done new prefix = '{prefix}' for {ctx.guild.name} from now on")
-
-
-@bot.command()
-async def osu(ctx, osu_user: str = None):
-    if osu_user == None:
-        discord_id = ctx.message.author.id
-        osu_user = get_osu_user_from_db(discord_id)
-    elif len(osu_user) > 20:
-        discord_id = int(osu_user.strip('<@!>'))
-        osu_user = get_osu_user_from_db(discord_id)
-    if osu_user == 'User not linked':
-        await ctx.send('User not linked')
-    else:
-        output = get_user1(osu_user, ctx.message.author)
-        try:
-            await ctx.send(content=None, embed=output)
-        except:
-            await ctx.send(output)
+async def osu(ctx, player: str = None):
+    db_obj = Database()
+    player, null = get_osu_username_from_param(ctx, player, db_obj)
+    await commands_osu(ctx, player)
 
 
 @bot.command(aliases=['r', 'rs'])
-async def recent(ctx, osu_user: str = None):
-    my_update_bool = False
-    if osu_user == None:
-        osu_user = get_osu_user_from_db(ctx.message.author.id)
-        my_update_bool = True
-    elif len(osu_user) > 20:
-        discord_id = int(osu_user.strip('<@!>'))
-        osu_user = get_osu_user_from_db(discord_id)
-    if osu_user == 'User not linked':
-        await ctx.send('User not linked')
-    else:
-        output = get_recent1(osu_user, ctx.channel.id, my_update_bool, ctx.message.author.id)
-        try:
-            await ctx.send(content=None, embed=output)
-        except:
-            await ctx.send(output)
+async def recent(ctx, player: str = None):
+    db_obj = Database()
+    player, update_bool = get_osu_username_from_param(ctx, player, db_obj)
+    await commands_recent(ctx, player, update_bool)
 
 
 @bot.command(aliases=['compare'])
-async def c(ctx, osu_user: str = None):
-    if osu_user == None:
-        discord_id = ctx.message.author.id
-        osu_user = get_osu_user_from_db(discord_id)
-    elif len(osu_user) > 20:
-        discord_id = int(osu_user.strip('<@!>'))
-        osu_user = get_osu_user_from_db(discord_id)
-    if osu_user == 'User not linked':
-        await ctx.send('User not linked')
-    else:
-        output = compare(osu_user, ctx.channel.id)
-        try:
-            if output[2] > 1:
-                await send_pages(ctx, output[0], output[1], output[2], bot)
-            else:
-                await ctx.send(content=None, embed=output[0])
-        except:
-            await ctx.send(output)
+async def c(ctx, player: str = None):
+    db_obj = Database()
+    player, null = get_osu_username_from_param(ctx, player, db_obj)
+    await commands_compare(ctx, player, bot)
 
 
 @bot.command()
-async def osutop(ctx, osu_user: str = None, p: str = None, play_number: int = 0):
-    osu_username = ""
-    if osu_user == None or osu_user == 'p' or osu_user == 'r':
+async def osutop(ctx, player: str = None, command_mode: str = None, play_number: int = 0):
+    db_obj = Database()
+    param_player = player # i need untouched player in this func
+    if player == None or player == 'p' or player == 'r':
         discord_id = ctx.message.author.id
-        osu_username = get_osu_user_from_db(discord_id)
-    elif len(osu_user) > 20:
-        discord_id = int(osu_user.strip('<@!>'))
-        osu_username = get_osu_user_from_db(discord_id)
+        player = db_obj.select_players_by_id(discord_id)
+        update_bool = True
+    elif len(player) > 20:
+        discord_id = int(player.strip('<@!>'))
+        player = db_obj.select_players_by_id(discord_id)
     else:
-        osu_username = osu_user
+        player = {
+            "osu_username" : player
+        }
+    # command_modes: 'p' = specific_play, 'r' = latest_topplays, None= osu_top
+    if param_player == 'p': # if first parameter are 'p' it means parameters are shifted ex: normal usage= >osutop osu_username 'p' 55 db_user usage= >osutop 'p' 55
+        play_number = int(command_mode) # shifting parameters
+        command_mode = 'p'              # shifting parameters
 
-    if osu_user == 'p':
-        play_number = int(p)
-    if osu_user == 'p' or p == 'p':
-        output = get_specific_play(osu_username, ctx.message.author, ctx.channel.id, play_number)
-    elif osu_user == 'r' or p == 'r':
-        output = get_latest_topplays(osu_username, ctx.message.author)
+    # i dont need same shifting on mode 'r' cause theres no another parameter in mode 'r'
+
+    if command_mode == 'p':
+        await commands_osutop_p(ctx, player, play_number)
+    elif param_player == 'r' or command_mode == 'r':
+        await commands_osutop_r(ctx, player)
     else:
-        output = osu_top(osu_username, ctx.message.author)
-    try:
-        await ctx.send(content=None, embed=output)
-    except:
-        await ctx.send(output)
+        await commands_osutop(ctx, player)
 
 
-
-@bot.command(aliases=['map'])
-async def mapdata(ctx, beatmap_id: str = None, mods: str = 'No Mod'):
-    if beatmap_id != None and beatmap_id.isnumeric() == False:
+@bot.command(aliases=['mapdata'])
+async def map(ctx, beatmap_id: str = None, mods: str = 'No Mod'):
+    if beatmap_id != None and beatmap_id.isnumeric() == False: # param shifting again see L#131 if confused
         mods = beatmap_id
         beatmap_id = None
-    output = spot_beatmap(ctx.channel.id, beatmap_id, mods)
-    try:
-        await ctx.send(embed=output)
-    except:
-        await ctx.send(output)
+    await commands_map(ctx, beatmap_id, mods)
 
 
 @bot.command(aliases=['newtopplay'])
-async def ntp(ctx, *p ):
-    osu_user = ""
-    if p[0].isnumeric():
+async def ntp(ctx, player: str = None, *pp_tuple):
+    db_obj = Database()
+    if player.isnumeric(): # param shifting
         discord_id = ctx.message.author.id
-        osu_user = get_osu_user_from_db(discord_id)
-        pp_tuple = p
-    elif len(p[0]) > 20:
-        discord_id = int(p[0].strip('<@!>'))
-        osu_user = get_osu_user_from_db(discord_id)
-        pp_tuple = p[1:]
+        pp_tuple += (player,)
+        player = db_obj.select_players_by_id(discord_id)
+    elif len(player) > 20: # not shifting thats mention
+        discord_id = int(player.strip('<@!>'))
+        player = db_obj.select_players_by_id(discord_id)
     else:
-        osu_user = p[0]
-        pp_tuple = p[1:]
+        player = {
+            "osu_username" : player
+        }
 
-    output = get_ntp(osu_user, pp_tuple)
-    try:
-        await ctx.send(content=None, embed=output)
-    except:
-        await ctx.send(output)
-
+    await commands_ntp(ctx, player, pp_tuple)
 
 
 @bot.command(aliases=['bonuspp'])
-async def bpp(ctx, osu_user: str = None):
-    if osu_user == None:
-        discord_id = ctx.message.author.id
-        osu_user = get_osu_user_from_db(discord_id)
-    elif len(osu_user) > 20:
-        discord_id = int(osu_user.strip('<@!>'))
-        osu_username = get_osu_user_from_db(discord_id)
-    output = get_bpp(osu_user)
-    try:
-        await ctx.send(content=None, embed=output)
-    except:
-        await ctx.send(output)
+async def bpp(ctx, player: str = None):
+    db_obj = Database()
+    player, null = get_osu_username_from_param(ctx, player, db_obj)
+    await commands_bpp(ctx, player)
+
 
 @bot.command()
 async def acc(ctx, count50, count100, mod:str = 'No Mod'):
-    try:
-        count50 = int(count50)
-        count100 = int(count100)
-    except:
-        await ctx.send("invalid 50&100 Counts")
-    output = get_acc(count50, count100, ctx.channel.id, mod)
-    await ctx.send(output)
+    await commands_acc(ctx, count50, count100, mod)
+
 
 @bot.command()
 async def leaderboards(ctx):
-    output = get_leaderboards(ctx)
-    try:
-        await ctx.send(content=None, embed=output)
-    except:
-        await ctx.send(output)
+    db_obj = Database()
+    await commands_leaderboards(ctx, db_obj)
 
 
 @bot.command()
-async def link(ctx, osu_user):
-    try:
-        output = link1(osu_user, ctx.message.author.id)
-        await ctx.send(output)
-    except:
-        await ctx.send('Something went wront')
-
+async def link(ctx, osu_username: str = None):
+    db_obj = Database()
+    await commands_link(ctx, osu_username, db_obj)
 
 @bot.command()
 async def unlink(ctx):
-    try:
-        output = unlink1(ctx.message.author.id)
-        await ctx.send(output)
-    except:
-        await ctx.send('Something went wrong')
+    db_obj = Database()
+    await commands_unlink(ctx, db_obj)
 
 @bot.command()
 async def help(ctx):
@@ -279,11 +209,19 @@ async def aliases(ctx):
     await ctx.send(file=File(r"my_files\aliases.png"))
 
 
+@bot.command(aliases=['global'])
+async def g(ctx, mods='No Mod'):
+    await commands_global(ctx, mods)
+
+
+@bot.command(aliases=['compareserver'])
+async def cs(ctx):
+    db_obj = Database()
+    await commands_compare_server(ctx, db_obj)
+
 @bot.command()
 async def roll(ctx, num=""):
-    output = get_roll_text(num)
-    await ctx.send(f"{ctx.message.author.name} Just rolled **{output}**")
-
+    await commands_roll(ctx, num)
 
 
 @bot.command()
@@ -296,23 +234,5 @@ async def talkmyboi(ctx, channel_id=526881587682344982, *message):
     await channel.send(output)
 
 
-@bot.command(aliases=['global'])
-async def g(ctx, mods='No Mod'):
-    output = get_global_image(ctx.channel.id, mods)
-    try:
-        await ctx.send(file=File(output))
-    except:
-        await ctx.send(output)
-
-
-
-@bot.command(aliases=['compareserver'])
-async def cs(ctx):
-    output = get_compare_server_image(ctx)
-    try:
-        await ctx.send(file=File(output))
-    except:
-        await ctx.send(output)
-
-
-bot.run(bot_token)
+load_dotenv(find_dotenv())
+bot.run(os.getenv('BOT_TOKEN'))
