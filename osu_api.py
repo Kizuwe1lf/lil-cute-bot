@@ -1,11 +1,12 @@
-import requests
-from secrets import api_key
+import os
 import json
-
+import requests
+from dotenv import load_dotenv, find_dotenv
 
 class OsuApiUrl:
     def __init__(self):
-        self.api_key = api_key
+        load_dotenv(find_dotenv())
+        self.api_key = os.getenv('API_KEY')
         self.base_api = "https://osu.ppy.sh/api/"
         self.recent_api_url = self.base_api + "get_user_recent"
         self.user_api_url = self.base_api + "get_user"
@@ -77,9 +78,9 @@ class GetStuff:
         self.api = OsuApiUrl()
 
     def get_beatmap_id(self, channel_id):
-        try: 
+        try:
             return self.beatmap_id[channel_id]
-        except: 
+        except:
             return []
 
     def get_scores(self, osu_user, beatmap_id, channel_id):
