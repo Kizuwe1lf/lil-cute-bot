@@ -1,68 +1,96 @@
-import sqlite3
+import pymongo
+import datetime
+import os
+from pymongo import MongoClient
+from dotenv import load_dotenv, find_dotenv
 
-
-class Database:
+class Database():
     def __init__(self):
-        self.conn = sqlite3.connect('my_files\lil_cute.db')
-        self.cursor = self.conn.cursor()
-        
-    def create_table(self):
-        self.conn.execute('''CREATE TABLE osu_userDB
-         (
-         discord_id INT PRIMARY KEY,
-         username           TEXT,
-         osu_user_id        INT,
-         pp_rank        INT,
-         pp_raw         REAL,
-         pp_country_rank   INT,
-         country          TEXT,
-         accuracy         REAL
-         );''') 
+        load_dotenv(find_dotenv())
+        cluster = MongoClient(os.getenv('MONGO_DB_STRING'))
 
-    def insert_into_database(self, data):
-        command = "INSERT INTO osu_userDB (discord_id, username, osu_user_id, pp_rank, pp_raw, pp_country_rank, country, accuracy) Values (?, ?, ?, ?, ?, ?, ?, ?)"
-        args = (data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7])
-        self.cursor.execute(command, args)
-        self.conn.commit()
-        return "Linked"
+        db = cluster["lil_cute_db"]
+        self.users = db["users_main"]
+        self.user_history = db["users_history"] # for tracking data changes
+        self.prefixes = db["prefixes"]
 
-    def update_database(self, data):
-        command = "UPDATE osu_userDB SET username=?, pp_rank=?, pp_raw=?, pp_country_rank=?, country=?, accuracy=? WHERE discord_id=?"
-        args = (data[1], data[3], data[4], data[5], data[6], data[7], data[0])
-        self.cursor.execute (command, args)
-        self.conn.commit()
-        
-    def select_from_database(self, discord_id):
-        command = "SELECT username FROM osu_userDB WHERE discord_id=?"
-        args = (discord_id,)
-        self.cursor.execute(command, args)
-        try:
-            username = self.cursor.fetchone()[0]
-        except:
-            username = 'User not linked'
-        return username
+    def update_data(self, user_data):
+        where = { "osu_user_id": user_data["osu_user_id"] }
+        set = { "$set": user_data }
+        self.users.update_one(where, set)
 
-    def delete_from_database(self, discord_id):
-        command = "DELETE FROM osu_userDB WHERE discord_id=?"
-        args = (discord_id,)
-        self.cursor.execute(command, args)
-        self.conn.commit()
-        return "Unlinked"
-        
-    def multiple_select_from_database(self, discord_id):
-        player_list = []
-        for d_id in discord_id:
-            command = "SELECT * FROM osu_userDB WHERE discord_id=?"
-            args = (d_id,)
-            self.cursor.execute(command, args)
-            x = self.cursor.fetchone()
-            if x:
-                player_list.append(x)
-        return player_list
-        
-    def close_connection(self):
-        self.conn.close()
+    def insert_data(self, user_data):
+        self.users.insert_one(user_data)
+        self.insert_history_collection(user_data)
 
+    def delete_data(self, discord_id):
+        where = { "discord_id": discord_id }
+        self.users.delete_one(where)
 
-# xd = Database()    # one time execution
-# xd.create_table()  # one time execution
+    def select_players_by_id(self, discord_id):
+        where = { "discord_id": discord_id }
+        result = self.users.find_one(where)
+        return result
+
+    def select_players_by_server(self, server_id):
+        where = {"servers" : { "$in": [server_id] } }
+        return self.users.find(where)
+
+    def update_after_play(self, user_data):
+        self.update_data(user_data)
+        self.insert_history_collection(user_data)
+
+    def insert_history_collection(self, user_data):
+        query_time = datetime.datetime.now()
+        user_data['year'] = query_time.year
+        user_data['month'] = query_time.month
+        user_data['day'] = query_time.day
+
+        self.user_history.insert_one(user_data)
+
+    def preparing_user_data_for_db_functions(self, get_user, discord_id, servers, server_id): # for first insert servers must be empty list
+        if server_id not in servers:
+            servers += [server_id]
+
+        user_data = {
+            "discord_id": discord_id,
+            "osu_username": get_user[0]['username'],
+            "osu_user_id" : get_user[0]['user_id'],
+            "pp_rank" : get_user[0]['pp_rank'],
+            "pp_raw" : get_user[0]['pp_raw'],
+            "pp_country_rank" : get_user[0]['pp_country_rank'],
+            "accuracy" : get_user[0]['accuracy'],
+            "playcount" : get_user[0]['playcount'],
+            "country" : get_user[0]['country'],
+            "ranked_score" : get_user[0]['ranked_score'],
+            "total_score" : get_user[0]['total_score'],
+            "count300" : get_user[0]['count300'],
+            "count100" : get_user[0]['count100'],
+            "count50" : get_user[0]['count50'],
+            "servers" : servers
+        }
+        return user_data
+
+    def set_prefix(self, server_id, prefix):
+        result = self.get_prefix(server_id)
+
+        data = {
+            "server_id": server_id,
+            "prefix": prefix
+        }
+
+        if result[1] == 1: # updates prefix if it exists
+            where = { "server_id": server_id }
+            set = { "$set": data }
+            self.prefixes.update_one(where, set)
+        else:
+            self.prefixes.insert_one(data)
+
+        return prefix
+
+    def get_prefix(self, server_id):
+        where = { "server_id": server_id }
+        result = self.prefixes.find_one(where)
+        if result is not None:
+            return [result['prefix'], 1]
+        return ['>', 0]
