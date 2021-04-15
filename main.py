@@ -105,7 +105,7 @@ async def osu(ctx, player: str = None):
 async def recent(ctx, player: str = None):
     db_obj = Database()
     player, update_bool = get_osu_username_from_param(ctx, player, db_obj)
-    await commands_recent(ctx, player, update_bool)
+    await commands_recent(ctx, player, update_bool, db_obj)
 
 
 @bot.command(aliases=['compare'])

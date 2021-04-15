@@ -5,7 +5,7 @@ from scripts import *
 import random
 
 
-async def commands_recent(ctx, player, update_bool):
+async def commands_recent(ctx, player, update_bool, db_obj):
     if player == None:
         await ctx.send('User Not Linked')
         return 0
@@ -96,6 +96,5 @@ async def commands_recent(ctx, player, update_bool):
     e.description = info
     await send_embed(ctx, e)
     if update_bool == True:
-        db_obj = Database()
         user_data = db_obj.preparing_user_data_for_db_functions(get_user, ctx.message.author.id, player['servers'], ctx.guild.id)
         db_obj.update_after_play(user_data)
