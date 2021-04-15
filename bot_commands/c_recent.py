@@ -59,7 +59,7 @@ async def commands_recent(ctx, player, update_bool):
     map_comp = get_map_completion(get_recent[0]['beatmap_id'], total_hits)
     fc_pp = ""
 
-    if map_comp > 85:
+    if float(map_comp) > 85:
         if int(get_beatmaps[0]['max_combo']) - int(get_recent[0]['maxcombo']) > 6 or int(count[0]) > 0 or get_recent[0]['rank'] == 'F': # add if fc pp to text if not fced
             fc_pp = get_if_fc_pp_text(get_if_fc_pp(get_recent[0]['beatmap_id'], mods_list, count)['pp'])
 

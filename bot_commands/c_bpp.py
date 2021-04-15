@@ -1,4 +1,5 @@
 from bot_commands.c_main import stuff
+from scripts import *
 
 
 async def commands_bpp(ctx, player):

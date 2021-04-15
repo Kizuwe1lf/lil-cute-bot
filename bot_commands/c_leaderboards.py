@@ -1,5 +1,5 @@
 import discord
-
+from scripts import *
 
 
 async def commands_leaderboards(ctx, db_obj):
