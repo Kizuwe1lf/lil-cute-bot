@@ -1,7 +1,7 @@
 from bot_commands.c_main import stuff
-from scripts import get_total_hours_played
 import discord
 import random
+from scripts import *
 
 
 async def commands_osu(ctx, player):
