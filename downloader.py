@@ -7,7 +7,7 @@ from PIL import Image
 
 
 def get_beatmap_path(beatmap_id):
-    pathname = f'beatmap_folder\{beatmap_id}'
+    pathname = f'my_files/beatmap_folder/{beatmap_id}'
     if path.exists(pathname) is False:
         return download_beatmaps(beatmap_id, pathname)
     else:
@@ -19,7 +19,7 @@ def download_beatmaps(beatmap_id, pathname):
     return pathname
 
 def get_avg_colour_from_cover(beatmapset_id):
-    pathname = f'beatmap_covers/{beatmapset_id}.jpg'
+    pathname = f'my_files/beatmap_covers/{beatmapset_id}.jpg'
     if path.exists(pathname) is False:
         download_thumbnails(beatmapset_id, pathname)
     try:
