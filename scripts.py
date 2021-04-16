@@ -35,25 +35,25 @@ def calc(param):
 def get_difficulty(beatmap_id, mods_list):
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['difficulty', bmap_path]
-    param = check_mods_for_calc(param, mods)
+    param = check_mods_for_calc(param, mods_list)
     return calc(param)['sr']
 
 def get_pp(beatmap_id, mods_list, maxcombo, count): # count has [miss, 50, 100, 300] counts
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['simulate', 'osu', bmap_path, f'-c {maxcombo}', f'-X {count[0]}', f'-M {count[1]}', f'-G {count[2]}']
-    param = check_mods_for_calc(param, mods)
+    param = check_mods_for_calc(param, mods_list)
     return calc(param)
 
 def get_if_fc_pp(beatmap_id, mods_list, count):
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['simulate', 'osu', bmap_path, f'-M {count[1]}', f'-G {count[2]}'] #excluding misses
-    param = check_mods_for_calc(param, mods)
+    param = check_mods_for_calc(param, mods_list)
     return calc(param)
 
 def get_beatmap_data(beatmap_id, mods_list):
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['difficulty', bmap_path]
-    param = check_mods_for_calc(param, mods)
+    param = check_mods_for_calc(param, mods_list)
     return calc(param)
 
 def get_if_fc_pp_text(pp):
@@ -229,11 +229,11 @@ def check_if_mods_are_invalid(mods): # works with str_mods and list_mods  ex: 'H
 
     return 1 # Poggers
 
-def check_mods_for_calc(param, mods):
-    if 'No Mod' in mods:
+def check_mods_for_calc(param, mods_list):
+    if 'No Mod' in mods_list:
         return param
     available_mods = ['NF', 'EZ', 'TD', 'HD', 'HR', 'NC', 'DT', 'HT', 'FL', 'SO']
-    for mod in mods:
+    for mod in mods_list:
         if mod in available_mods:
             param.append(f'-m {mod}')
     return param
