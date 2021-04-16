@@ -44,14 +44,12 @@ async def commands_recent(ctx, player, update_bool, db_obj):
 
     mods_list = num_to_mod_list(get_recent[0]['enabled_mods'])
     mods_string = ''.join(mods_list)
-
     maxcombo = get_recent[0]['maxcombo']
-
-    get_pp_response = get_pp(get_recent[0]['beatmap_id'], mods_list, maxcombo, count)
-    accuracy = get_pp_response['accuracy']
+    accuracy = calc_accuracy(*count)
 
     pp_text = ""
     if get_recent[0]['rank'] != 'F': # dont include pp text if its fail play
+        get_pp_response = get_pp(get_recent[0]['beatmap_id'], mods_list, maxcombo, count)
         pp_text = get_pp_text(get_pp_response['pp'])
 
     score = get_score(get_recent[0]['score'])
@@ -88,7 +86,7 @@ async def commands_recent(ctx, player, update_bool, db_obj):
     info = f"**[{get_beatmaps[0]['title'].replace('*', ' ')} [{get_beatmaps[0]['version']}]](https://osu.ppy.sh/beatmapsets/{get_beatmaps[0]['beatmapset_id']}#osu/{get_beatmaps[0]['beatmap_id']})**\n"
     info += f"▸ **[{star_rating}★]** +{mods_string} | {score} **-** {get_rank_emote(get_recent[0]['rank'])}\n"
     info += f"▸  {pp_text} {fc_pp} ** {player_combo_text}/{get_beatmaps[0]['max_combo']}**\n"
-    info += f"▸ {get_pp_response['accuracy']}% | {count[2]}x{get_onehundred_emote()} | {count[1]}x{get_fifty_emote()} | {count[0]}{get_miss_emote()}\n"
+    info += f"▸ {accuracy}% | {count[2]}x{get_onehundred_emote()} | {count[1]}x{get_fifty_emote()} | {count[0]}{get_miss_emote()}\n"
     info += f"▸ Try **#{try_counter}** | {time_ago(datetime.strptime(get_recent[0]['date'], '%Y-%m-%d %H:%M:%S'), datetime.utcnow())} {rank_text}\n"
     if get_recent[0]['rank'] == 'F': info += f"▸ Map Completion: {map_comp}%\n"
     # footer_text = f" idk what to put here"

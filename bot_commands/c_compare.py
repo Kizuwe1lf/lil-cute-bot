@@ -58,7 +58,7 @@ async def commands_compare(ctx, player, bot):
             fc_pp = get_if_fc_pp_text(fc_pp_value['pp'])
 
         if play['pp'] is not None:
-            pp_text = f"**{float(play['pp']):0.2f}**pp"
+            pp_text = f"**{round_func(play['pp'])}**pp"
         else:
             pp_value = get_pp(beatmap_id, mods_list, play['maxcombo'], count)
             pp_text = get_pp_text(pp_value['pp'])
