@@ -35,25 +35,25 @@ def calc(param):
 def get_difficulty(beatmap_id, mods_list):
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['difficulty', bmap_path]
-    param = check_mods_for_calc(param, mods_list)
+    param = add_mods_to_param_for_calc(param, mods_list)
     return calc(param)['sr']
 
 def get_pp(beatmap_id, mods_list, maxcombo, count): # count has [miss, 50, 100, 300] counts
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['simulate', 'osu', bmap_path, f'-c {maxcombo}', f'-X {count[0]}', f'-M {count[1]}', f'-G {count[2]}']
-    param = check_mods_for_calc(param, mods_list)
+    param = add_mods_to_param_for_calc(param, mods_list)
     return calc(param)
 
 def get_if_fc_pp(beatmap_id, mods_list, count):
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['simulate', 'osu', bmap_path, f'-M {count[1]}', f'-G {count[2]}'] #excluding misses
-    param = check_mods_for_calc(param, mods_list)
+    param = add_mods_to_param_for_calc(param, mods_list)
     return calc(param)
 
 def get_beatmap_data(beatmap_id, mods_list):
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['difficulty', bmap_path]
-    param = check_mods_for_calc(param, mods_list)
+    param = add_mods_to_param_for_calc(param, mods_list)
     return calc(param)
 
 def get_if_fc_pp_text(pp):
@@ -229,25 +229,24 @@ def check_if_mods_are_invalid(mods): # works with str_mods and list_mods  ex: 'H
 
     return 1 # Poggers
 
-def check_mods_for_calc(param, mods_list):
-    if 'No Mod' in mods_list:
-        return param
-    available_mods = ['NF', 'EZ', 'TD', 'HD', 'HR', 'NC', 'DT', 'HT', 'FL', 'SO']
-    for mod in mods_list:
-        if mod in available_mods:
+def add_mods_to_param_for_calc(param, mods_list):
+    if 'No Mod' not in mods_list:
+        for mod in mods_list:
             param.append(f'-m {mod}')
     return param
 
 
 def get_mod_list_from_mods_string(mods):
-    if mods == 'No Mod':
-        mods_list = ['No Mod']
-    else:
-        mods_list = []
-        while mods:
+    available_mods = ['NF', 'EZ', 'TD', 'HD', 'HR', 'NC', 'DT', 'HT', 'FL', 'SO']
+    mods_list = []
+    while mods:
+        if mods[:2].upper() in available_mods:
             mods_list.append(mods[:2].upper())
-            mods = mods[2:]
+        mods = mods[2:]
+    if mods_list == []:
+        mods_list = ['No Mod']
     return mods_list
+
 
 def round_func(val): # rounds with 2 dec ex: 3 = 3.00 ---- 3.5556 = 3.55
     return f"{float(val):0.2f}"

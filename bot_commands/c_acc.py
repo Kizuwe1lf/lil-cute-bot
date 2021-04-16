@@ -5,6 +5,7 @@ from scripts import *
 async def commands_acc(ctx, count50, count100, mods:str = 'No Mod'):
     beatmap_id = stuff.get_beatmap_id(ctx.channel.id)
     mods_list = get_mod_list_from_mods_string(mods)
+    mods_string = ''.join(mods_list)
 
     if not beatmap_id:
         await ctx.send(f"Theres no ~~beatmap_id~~ in cache")
@@ -18,4 +19,4 @@ async def commands_acc(ctx, count50, count100, mods:str = 'No Mod'):
 
     count = [0, int(count50), int(count100)]
     if_fc_pp_resp = get_if_fc_pp(beatmap_id, mods_list, count)
-    await ctx.send(f"{if_fc_pp_resp['accuracy']}% +{mods} FC: **{if_fc_pp_resp['pp']}**pp")
+    await ctx.send(f"{if_fc_pp_resp['accuracy']}% +{mods_string} FC: **{if_fc_pp_resp['pp']}**pp")
