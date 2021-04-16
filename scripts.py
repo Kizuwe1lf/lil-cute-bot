@@ -35,35 +35,25 @@ def calc(param):
 def get_difficulty(beatmap_id, mods_list):
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['difficulty', bmap_path]
-    if len(mods_list[0]) < 4: # Not including no mod
-        for mod in mods_list:
-            param.append(f'-m {mod}')
+    param = check_mods_for_calc(param, mods)
     return calc(param)['sr']
 
 def get_pp(beatmap_id, mods_list, maxcombo, count): # count has [miss, 50, 100, 300] counts
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['simulate', 'osu', bmap_path, f'-c {maxcombo}', f'-X {count[0]}', f'-M {count[1]}', f'-G {count[2]}']
-    if len(mods_list[0]) < 4: # Not including no mod
-        for mod in mods_list:
-            param.append(f'-m {mod}')
-    output = calc(param)
-    return output
+    param = check_mods_for_calc(param, mods)
+    return calc(param)
 
 def get_if_fc_pp(beatmap_id, mods_list, count):
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['simulate', 'osu', bmap_path, f'-M {count[1]}', f'-G {count[2]}'] #excluding misses
-    if len(mods_list[0]) < 4: # Not including no mod
-        for mod in mods_list:
-            param.append(f'-m {mod}')
-    output = calc(param)
-    return output
+    param = check_mods_for_calc(param, mods)
+    return calc(param)
 
 def get_beatmap_data(beatmap_id, mods_list):
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['difficulty', bmap_path]
-    if len(mods_list[0]) < 4: # Not including no mod
-        for mod in mods_list:
-            param.append(f'-m {mod}')
+    param = check_mods_for_calc(param, mods)
     return calc(param)
 
 def get_if_fc_pp_text(pp):
@@ -238,6 +228,16 @@ def check_if_mods_are_invalid(mods): # works with str_mods and list_mods  ex: 'H
             return 0
 
     return 1 # Poggers
+
+def check_mods_for_calc(param, mods):
+    if 'No Mod' in mods:
+        return param
+    available_mods = ['NF', 'EZ', 'TD', 'HD', 'HR', 'NC', 'DT', 'HT', 'FL', 'SO']
+    for mod in mods:
+        if mod in available_mods:
+            param.append(f'-m {mod}')
+    return param
+
 
 def get_mod_list_from_mods_string(mods):
     if mods == 'No Mod':
