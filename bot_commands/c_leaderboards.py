@@ -10,7 +10,6 @@ async def commands_leaderboards(ctx, db_obj):
     multi_link_count = 0
     i = 0
     while i < len(members) and i < 21:
-        print(type(members[i]['pp_raw']))
         if i >= 1 and members[i]['osu_user_id'] == members[i-1]['osu_user_id']:
             multi_link_count += 1
         else:
