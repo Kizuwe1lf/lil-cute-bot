@@ -15,7 +15,7 @@ async def commands_leaderboards(ctx, db_obj):
         else:
             profile_url = f"(https://osu.ppy.sh/u/{members[i]['osu_user_id']})"
             osu_user = f"[{members[i]['osu_username']}]"
-            description += f"**{(i + 1)-multi_link_count}.** {osu_user}{profile_url} **{members[i]['pp_raw']}pp** #{members[i]['pp_rank']} {members[i]['country']}#{members[i]['pp_country_rank']}\n"
+            description += f"**{(i + 1)-multi_link_count}.** {osu_user}{profile_url} **{round_func(members[i]['pp_raw'])}pp** #{members[i]['pp_rank']} {members[i]['country']}#{members[i]['pp_country_rank']}\n"
         i += 1
 
     e = discord.Embed(colour=ctx.message.author.colour)
