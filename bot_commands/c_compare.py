@@ -76,6 +76,6 @@ async def commands_compare(ctx, player, bot):
         pass
     e.description = page_description[0]
     if page_counter > 1:
-        await send_pages(ctx, e, page_description, page_counter)
+        await send_pages(ctx, e, page_description, page_counter, bot)
     else:
         await send_embed(ctx, e)
