@@ -1,6 +1,7 @@
-import pymongo
-import datetime
 import os
+import pymongo
+from datetime import datetime
+from datetime import timedelta
 from pymongo import MongoClient
 from dotenv import load_dotenv, find_dotenv
 
@@ -41,10 +42,7 @@ class Database():
         self.insert_history_collection(user_data)
 
     def insert_history_collection(self, user_data):
-        query_time = datetime.datetime.now()
-        user_data['year'] = query_time.year
-        user_data['month'] = query_time.month
-        user_data['day'] = query_time.day
+        user_data['date'] = datetime.now()
 
         self.user_history.insert_one(user_data)
 
