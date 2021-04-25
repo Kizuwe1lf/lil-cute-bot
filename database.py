@@ -92,3 +92,9 @@ class Database():
         if result is not None:
             return [result['prefix'], 1]
         return ['>', 0]
+
+    def search_date(self, osu_username, day):
+        today = datetime.now()
+        first_day = today - timedelta(day)
+        cursor = self.user_history.find({"osu_username": {'$regex' : osu_username, '$options' : 'i'}, "date": {"$gt": first_day}})
+        return cursor, first_day, today
