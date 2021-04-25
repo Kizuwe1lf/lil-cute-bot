@@ -21,6 +21,7 @@ from bot_commands.c_leaderboards import commands_leaderboards
 from bot_commands.c_global import commands_global
 from bot_commands.c_compare_server import commands_compare_server
 from bot_commands.c_roll import commands_roll
+from bot_commands.c_graph import commands_graph
 from database import Database
 from scripts import get_osu_username_from_param
 
@@ -222,6 +223,19 @@ async def cs(ctx):
 @bot.command()
 async def roll(ctx, num=""):
     await commands_roll(ctx, num)
+
+@bot.command(aliases=['chart'])
+async def graph(ctx, player, field_name, day: str=None):
+    db_obj = Database()
+    if day == None: # param shifting
+        day = field_name
+        field_name = player
+        discord_id = ctx.message.author.id
+        player = db_obj.select_players_by_id(discord_id)['osu_username']
+    elif len(player) > 20:
+        discord_id = int(player.strip('<@!>'))
+        player = db_obj.select_players_by_id(discord_id)['osu_username']
+    await commands_graph(ctx, db_obj, player, field_name, int(day))
 
 
 @bot.command()
