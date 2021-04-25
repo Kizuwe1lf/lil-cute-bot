@@ -26,10 +26,10 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
     if cursor.count() == 0:
         return await ctx.send(f'I dont recognize {osu_username}')
 
+    discord_id = cursor[0]['discord_id']
     need_day = cursor[0]['date'] - timedelta(1)
-    osu_username = cursor[0]['osu_username']
 
-    servers = cursor[0]['servers']
+    servers = db_obj.select_players_by_id(discord_id)['servers']
 
     if ctx.message.guild.id not in servers:
         return await ctx.send(f'I dont recognize {osu_username} from this server')
