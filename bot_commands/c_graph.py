@@ -24,7 +24,7 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
     date_array = []
 
     if cursor.count() == 0:
-        return await ctx.send(f'I dont recognize {osu_username}')
+        return await ctx.send(f'I could not find any data related to {osu_username}')
 
     discord_id = cursor[0]['discord_id']
     need_day = cursor[0]['date'] - timedelta(1)
