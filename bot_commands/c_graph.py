@@ -27,7 +27,12 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
         return await ctx.send(f'I could not find any data related to {osu_username}')
 
     discord_id = cursor[0]['discord_id']
-    need_day = cursor[0]['date'] - timedelta(1)
+
+    need_day = first_day
+    first_data_day = cursor[0]['date']
+
+    if need_day < first_data_day:
+        need_day = first_data_day - timedelta(1)
 
     servers = db_obj.select_players_by_id(discord_id)['servers']
 
