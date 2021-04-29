@@ -11,8 +11,8 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
     if day < 5:
         return await ctx.send('Use minimum 7 days')
 
-    if day > 90:
-        return await ctx.send('Use minimum 90 days')
+    if day == 'all':
+        day = 2000
 
     index = field_names_from_user.index(field_name_text)
     field_name = field_names_in_db[index]
@@ -46,5 +46,9 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
     if abs(value_array[0] - value_array[-1]) < 1.5:
         return await ctx.send('Not Enough Change')
 
+    reverse = False
+    if field_name == 'pp_rank' or field_name == 'pp_country_rank':
+        reverse = True
+
     title = f"{field_name_text} line chart for {osu_username}"
-    await make_chart(ctx, date_array, value_array, title)
+    await make_chart(ctx, date_array, value_array, title, reverse)
