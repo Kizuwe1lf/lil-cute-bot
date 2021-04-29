@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 from discord import File
 
-async def make_chart(ctx, x_array, y_array, title, x_label, y_label): # x Month array,  y Value array
+async def make_chart(ctx, x_array, y_array, title): # x Month array,  y Value array
     # Chart Color Block
     fig = plt.figure()
     ax = plt.axes()
@@ -17,11 +18,24 @@ async def make_chart(ctx, x_array, y_array, title, x_label, y_label): # x Month 
     plt.rcParams['axes.titlecolor'] = 'silver'
 
     ######
+    data_day_range = (x_array[-1] - x_array[0]).days
+    interval_int = (data_day_range // 8) + 1
+    date_format = '%b %d'
 
-    plt.plot(x_array, y_array, color='silver', marker='o', markerfacecolor='darkslategrey')
+    if data_day_range > 80:
+        date_format = '%b %Y'
+    elif data_day_range > 365:
+        date_format = '%b %Y'
+        interval_int = 90
+    elif data_day_range > 730:
+        date_format = '%b %Y'
+        interval_int = 180
+
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter(date_format))
+    plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=interval_int))
+    plt.plot(x_array, y_array, color='silver')
     plt.title(title)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
+    plt.gcf().autofmt_xdate()
     plt.savefig('my_files/chart.png')
     plt.close()
     await ctx.send(file=File('my_files/chart.png'))
