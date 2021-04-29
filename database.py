@@ -94,7 +94,6 @@ class Database():
         return ['>', 0]
 
     def search_date(self, osu_username, day):
-        today = datetime.now()
-        first_day = today - timedelta(day)
+        first_day = datetime.now() - timedelta(day)
         cursor = self.user_history.find({"osu_username": {'$regex' : osu_username, '$options' : 'i'}, "date": {"$gt": first_day}})
-        return cursor, first_day, today
+        return cursor
