@@ -43,8 +43,10 @@ class Database():
 
     def insert_history_collection(self, user_data):
         user_data['date'] = datetime.now()
-
         self.user_history.insert_one(user_data)
+
+    def select_everyone(self):
+        return self.users.find()
 
     def preparing_user_data_for_db_functions(self, get_user, discord_id, servers, server_id): # for first insert servers must be empty list
         if server_id not in servers:
