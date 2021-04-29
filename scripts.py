@@ -269,6 +269,16 @@ def get_osu_username_from_param(ctx, player, db_obj):
         }
     return player, update_bool
 
+def get_osu_username_for_player_tuple_elements(ctx, player, db_obj):
+    if len(player) > 20:
+        discord_id = int(player.strip('<@!>'))
+        player = db_obj.select_players_by_id(discord_id)
+    else:
+        player = {
+            "osu_username" : player
+        }
+    return player
+
 async def send_pages(ctx, e, info, total_pages, bot):
     cur_page = 1
     left = "<:slide_left:734860817584881674>"
