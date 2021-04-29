@@ -1,7 +1,6 @@
 import discord
 from scripts import *
 
-
 async def commands_leaderboards(ctx, db_obj):
     members = db_obj.select_players_by_server(ctx.guild.id)
     members = sorted(members, key=lambda x:x['pp_raw'], reverse=True)
@@ -22,5 +21,5 @@ async def commands_leaderboards(ctx, db_obj):
     e.set_author(name=f"osu! Ranking for {ctx.guild.name}")
     e.set_thumbnail(url=ctx.guild.icon_url)
     e.description = description
-    e.set_footer(text=f"{len(members)-multi_link_count} player linked in {ctx.guild.name}")
+    e.set_footer(text=f"{len(members)-multi_link_count} players linked in {ctx.guild.name}")
     await send_embed(ctx, e)
