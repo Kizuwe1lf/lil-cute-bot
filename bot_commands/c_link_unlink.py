@@ -17,13 +17,10 @@ async def commands_link(ctx, osu_username, db_obj):
     else: # if in db
         if ctx.guild.id in user_data_in_db['servers']:
             await ctx.send('Already Linked! <:ramPout:716183173318443018>')
-        elif user_data_in_db['discord_id'] == ctx.message.author.id and user_data_in_db['osu_username'] == osu_username:
+        else:
             user_data_in_db['servers'] += [ctx.guild.id]
             db_obj.update_data(user_data_in_db)
             await ctx.send(f'Now recognizing you in {ctx.guild.name} too! <:shades:627100412851388426>')
-        else:
-            await ctx.send("The usernames doesn't match <:PauseChamp:809452099858858094>")
-
 
 async def commands_unlink(ctx, db_obj):
     db_obj.delete_data(ctx.message.author.id)
