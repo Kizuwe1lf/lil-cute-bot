@@ -18,6 +18,7 @@ from bot_commands.c_bpp import commands_bpp
 from bot_commands.c_acc import commands_acc
 from bot_commands.c_map import commands_map
 from bot_commands.c_leaderboards import commands_leaderboards
+from bot_commands.c_global_leaderboards import commands_global_leaderboards
 from bot_commands.c_global import commands_global
 from bot_commands.c_compare_server import commands_compare_server
 from bot_commands.c_roll import commands_roll
@@ -191,6 +192,11 @@ async def acc(ctx, count50, count100, mod:str = 'No Mod'):
 async def leaderboards(ctx):
     db_obj = Database()
     await commands_leaderboards(ctx, db_obj)
+
+@bot.command(aliases=['globalboards'])
+async def globalleaderboards(ctx):
+    db_obj = Database()
+    await commands_global_leaderboards(ctx, db_obj, bot.user.avatar_url, bot.user.name)
 
 
 @bot.command()
