@@ -238,7 +238,7 @@ async def graph(ctx, player, field_name, day: str=None):
     elif len(player) > 20:
         discord_id = int(player.strip('<@!>'))
         player = db_obj.select_players_by_id(discord_id)['osu_username']
-    await commands_graph(ctx, db_obj, player, field_name, int(day))
+    await commands_graph(ctx, db_obj, player, field_name, day)
 
 
 @bot.command()
