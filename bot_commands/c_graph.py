@@ -27,6 +27,7 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
         return await ctx.send(f'I could not find any data related to {osu_username}')
 
     discord_id = cursor[0]['discord_id']
+    osu_username = cursor[0]['osu_username']
 
     need_day = first_day
     first_data_day = cursor[0]['date']
@@ -46,7 +47,6 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
             need_day += timedelta(1)
 
         if last_added_day == row['date'].day:
-            date_array[-1] = f"{need_day.strftime('%h')} {need_day.day}"
             value_array[-1] = row[field_name]
             continue
 
@@ -55,6 +55,7 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
             value_array.append(row[field_name])
             last_added_day = row['date'].day
             need_day += timedelta(1)
+
 
     if len(date_array) < 3:
         return await ctx.send('Not Enough Data')
