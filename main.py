@@ -23,7 +23,7 @@ from bot_commands.c_compare_server import commands_compare_server
 from bot_commands.c_roll import commands_roll
 from bot_commands.c_graph import commands_graph
 from database import Database
-from scripts import get_osu_username_from_param
+from scripts import get_osu_username_from_param, get_osu_username_for_player_tuple_elements
 
 # Hey!
 
@@ -96,10 +96,13 @@ async def leaveserver(ctx, rank):
 
 
 @bot.command()
-async def osu(ctx, player: str = None):
+async def osu(ctx, player: str = None, *player_tuple):
     db_obj = Database()
     player, null = get_osu_username_from_param(ctx, player, db_obj)
     await commands_osu(ctx, player)
+    for player in player_tuple:
+        player = get_osu_username_for_player_tuple_elements(ctx, player, db_obj)
+        await commands_osu(ctx, player)
 
 
 @bot.command(aliases=['r', 'rs'])
