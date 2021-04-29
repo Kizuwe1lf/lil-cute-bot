@@ -39,12 +39,30 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
     if ctx.message.guild.id not in servers:
         return await ctx.send(f'I dont recognize {osu_username} from this server')
 
-    for row in cursor:
+
+    '''    for row in cursor:
         while need_day.day < row['date'].day:
             need_day += timedelta(1)
         if need_day.day == row['date'].day:
             date_array.append(f"{need_day.strftime('%h')} {need_day.day}")
             value_array.append(row[field_name])
+            need_day += timedelta(1)
+    '''
+    last_added_day = 999
+
+    for row in cursor:
+        while need_day.day < row['date'].day:
+            need_day += timedelta(1)
+
+        if last_added_day == row['date'].day:
+            date_array[-1] = f"{need_day.strftime('%h')} {need_day.day}"
+            value_array[-1] = row[field_name]
+            continue
+
+        if need_day.day == row['date'].day:
+            date_array.append(f"{need_day.strftime('%h')} {need_day.day}")
+            value_array.append(row[field_name])
+            last_added_day = row['date'].day
             need_day += timedelta(1)
 
     if len(date_array) < 3:
