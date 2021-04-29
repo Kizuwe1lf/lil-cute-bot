@@ -155,7 +155,7 @@ async def map(ctx, beatmap_id: str = None, mods: str = 'No Mod'):
 
 
 @bot.command(aliases=['newtopplay'])
-async def ntp(ctx, player: str = None, *pp_tuple):
+async def ntp(ctx, player, *pp_tuple):
     db_obj = Database()
     if player.isnumeric(): # param shifting
         discord_id = ctx.message.author.id
