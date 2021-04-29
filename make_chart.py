@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from discord import File
 
-async def make_chart(ctx, x_array, y_array, title): # x Month array,  y Value array
+async def make_chart(ctx, x_array, y_array, title, reverse): # x Month array,  y Value array
     # Chart Color Block
     fig = plt.figure()
     ax = plt.axes()
@@ -30,6 +30,9 @@ async def make_chart(ctx, x_array, y_array, title): # x Month array,  y Value ar
     elif data_day_range > 730:
         date_format = '%b %Y'
         interval_int = 180
+
+    if reverse == True:
+        ax.invert_yaxis()
 
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter(date_format))
     plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=interval_int))
