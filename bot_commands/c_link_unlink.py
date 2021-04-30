@@ -5,11 +5,13 @@ async def commands_link(ctx, osu_username, db_obj):
     user_data_in_db = db_obj.select_players_by_id(ctx.message.author.id)
 
     if user_data_in_db == None: # if none link it
+        if osu_username == None:
+            return await ctx.send('Wheres ur username bud')
+
         get_user = stuff.get_user(osu_username)
 
         if not get_user:
-            await ctx.send("User Not Found")
-            return 0
+            return await ctx.send("User Not Found")
 
         user_data = db_obj.preparing_user_data_for_db_functions(get_user, ctx.message.author.id, [], ctx.guild.id)
         db_obj.insert_data(user_data)

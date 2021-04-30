@@ -8,7 +8,7 @@ async def commands_global_leaderboards(ctx, db_obj, bot_avatar_url, bot_user_nam
     description = ""
     multi_link_count = 0
     i = 0
-    while i < len(everyone) and i < 21:
+    while i < len(everyone) and i < 20:
         if i >= 1 and everyone[i]['osu_user_id'] == everyone[i-1]['osu_user_id']:
             multi_link_count += 1
         else:
