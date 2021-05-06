@@ -4,7 +4,7 @@ from bot_commands.c_main import stuff
 async def commands_link(ctx, osu_username, db_obj):
     user_data_in_db = db_obj.select_players_by_id(ctx.message.author.id)
 
-    if user_data_in_db == None: # if none link it
+    if user_data_in_db.count() == 0: # if none link it
         if osu_username == None:
             return await ctx.send('Wheres ur username bud')
 
