@@ -152,9 +152,13 @@ async def osutop(ctx, player: str = None, command_mode: str = None, play_number:
 
 @bot.command(aliases=['mapdata'])
 async def map(ctx, beatmap_id: str = None, mods: str = 'No Mod'):
-    if beatmap_id != None and beatmap_id.isnumeric() == False: # param shifting again see L#131 if confused
-        mods = beatmap_id
-        beatmap_id = None
+    if beatmap_id != None:
+        if len(beatmap_id) > 14:
+            beatmap_id = beatmap_id.split("/")[-1]
+        elif beatmap_id.isnumeric() == False: # param shifting bmap id cant be lower than 14 and not numeric at the same time see L#131 if confused
+            mods = beatmap_id
+            beatmap_id = None
+
     await commands_map(ctx, beatmap_id, mods)
 
 

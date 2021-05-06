@@ -33,9 +33,6 @@ def get_beatmap_status(beatmap_status):
 async def commands_map(ctx, beatmap_id, mods: list = ['No Mod']):
     if beatmap_id == None:
         beatmap_id = stuff.get_beatmap_id(ctx.channel.id)
-    else:
-        beatmap_id = beatmap_id.split("/")
-        beatmap_id = beatmap_id[-1]
     if not beatmap_id:
         await ctx.send(f"Theres no ~~beatmap_id~~ in cache")
         return 0
