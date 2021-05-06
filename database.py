@@ -30,8 +30,7 @@ class Database():
 
     def select_players_by_id(self, discord_id):
         where = { "discord_id": discord_id }
-        result = self.users.find_one(where)
-        return result
+        return self.users.find_one(where)
 
     def select_players_by_server(self, server_id):
         where = {"servers" : { "$in": [server_id] } }
