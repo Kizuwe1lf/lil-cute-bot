@@ -26,9 +26,6 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
     if cursor.count() == 0:
         return await ctx.send(f'I could not find any data related to {osu_username}! Use more recent command so i can have some data <:hyperEvil:496683825859002368>')
 
-    elif cursor.count() < 3:
-        return await ctx.send('Not Enough Data! Use more recent command so i can have some data <:hyperEvil:496683825859002368>')
-
     discord_id = cursor[0]['discord_id']
     osu_username = cursor[0]['osu_username']
 
@@ -42,8 +39,10 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
         date_array.append(row['date'])
         value_array.append(row[field_name])
 
-
-    if abs(value_array[0] - value_array[-1]) < 1.5:
+    days = (date_array[-1] - date_array[0]).days
+    if days < 7:
+        return await ctx.send('Not Enough Data! Use more recent command so i can have some data <:hyperEvil:496683825859002368>')
+    if abs(value_array[0] - value_array[-1]) < 2.1:
         return await ctx.send('Not Enough Change')
 
     reverse = False
@@ -51,4 +50,4 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
         reverse = True
 
     title = f"{field_name_text} line chart for {osu_username}"
-    await make_chart(ctx, date_array, value_array, title, reverse)
+    await make_chart(ctx, date_array, value_array, title, reverse, days)
