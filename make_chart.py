@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
+from matplotlib.dates import DayLocator, DateFormatter, MonthLocator
 from discord import File
 
-async def make_chart(ctx, x_array, y_array, title, reverse): # x Month array,  y Value array
+async def make_chart(ctx, x_array, y_array, title, reverse, days): # x Month array,  y Value array
     # Chart Color Block
     fig = plt.figure()
     ax = plt.axes()
+    ax.grid(linestyle='-', linewidth=0.3, axis='y')
     fig.patch.set_facecolor('darkslategrey')
     ax.set_facecolor('darkslategrey')
     ax.spines['bottom'].set_color('silver')
@@ -14,31 +15,21 @@ async def make_chart(ctx, x_array, y_array, title, reverse): # x Month array,  y
     ax.spines['left'].set_color('silver')
     ax.xaxis.label.set_color('silver')
     ax.yaxis.label.set_color('silver')
-    ax.tick_params(colors='silver', which='both')
     plt.rcParams['axes.titlecolor'] = 'silver'
+    ax.tick_params(colors='silver', which='both')
 
-    ######
-    data_day_range = (x_array[-1] - x_array[0]).days
-    interval_int = (data_day_range // 8) + 1
-    date_format = '%b %d'
+    if reverse == True: ax.invert_yaxis()
 
-    if data_day_range > 80:
-        date_format = '%b %Y'
-    elif data_day_range > 365:
-        date_format = '%b %Y'
-        interval_int = 90
-    elif data_day_range > 730:
-        date_format = '%b %Y'
-        interval_int = 180
+    dateFmt = DateFormatter('%d %b')
+    if x_array[0].year != x_array[-1].year: # if years are changing
+        dateFmt = DateFormatter('%b %Y')
 
-    if reverse == True:
-        ax.invert_yaxis()
+    ax.xaxis.set_major_formatter(dateFmt)
+    ax.xaxis.set_major_locator(plt.MaxNLocator(10))
 
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter(date_format))
-    plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=interval_int))
+    plt.gcf().autofmt_xdate(rotation=45)
     plt.plot(x_array, y_array, color='silver')
     plt.title(title)
-    plt.gcf().autofmt_xdate()
     plt.savefig('my_files/chart.png')
     plt.close()
     await ctx.send(file=File('my_files/chart.png'))
