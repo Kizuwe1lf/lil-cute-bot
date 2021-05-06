@@ -64,7 +64,7 @@ async def commands_map(ctx, beatmap_id, mods: list = ['No Mod']):
     map_data = get_beatmap_data(beatmap_id, mods_list)
     mods_string = ''.join(mods_list)
 
-    if 'DT' or 'NC' in mods_list:
+    if 'DT' in mods_list or 'NC' in mods_list:
         mod_formula = 'DT'
     elif 'HT' in mods_list:
         mod_formula = 'HT'
