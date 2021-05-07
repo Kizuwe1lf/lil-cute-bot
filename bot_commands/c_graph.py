@@ -9,8 +9,8 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
         return await ctx.send('Wrong field usage available ones are; pp, rank, acc, pc, countryrank')
 
 
-    if day == 'all':
-        day = 2000
+    if day is None:
+        day = 5000
     elif int(day) < 5:
         return await ctx.send('Use minimum 7 days')
 
