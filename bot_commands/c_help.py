@@ -127,5 +127,8 @@ async def commands_help(ctx, prefix, command_name, bot_user_name):
         output += "instead of osu_username u can mention linked users or you just dont give any username for self use\n"
         output += f"Examples: {prefix}{command_name} @discord_user or {prefix}{command_name}"
 
+    else:
+        return await ctx.send(f"Invalid Command Name Type {prefix}help for command list")
+
     output += "```"
     await ctx.send(output)
