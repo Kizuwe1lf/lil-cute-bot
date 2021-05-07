@@ -23,6 +23,7 @@ from bot_commands.c_global import commands_global
 from bot_commands.c_compare_server import commands_compare_server
 from bot_commands.c_roll import commands_roll
 from bot_commands.c_graph import commands_graph
+from bot_commands.c_help import commands_help
 from database import Database
 from scripts import get_osu_username_from_param, get_osu_username_for_player_tuple_elements
 
@@ -214,8 +215,12 @@ async def unlink(ctx):
     await commands_unlink(ctx, db_obj)
 
 @bot.command()
-async def help(ctx):
-    await ctx.send(file=File(r"my_files\help.png"))
+async def help(ctx, command_name: str = None):
+    if command_name == None:
+        await ctx.send(file=File(r"my_files\help.png"))
+    else:
+        await commands_help(ctx, ctx.prefix, command_name, bot.user.name)
+
 
 
 @bot.command()
@@ -238,9 +243,9 @@ async def roll(ctx, num=""):
     await commands_roll(ctx, num)
 
 @bot.command(aliases=['chart'])
-async def graph(ctx, player, field_name, day: str=None):
+async def graph(ctx, player, field_name: str=None, day: str=None):
     db_obj = Database()
-    if day == None: # param shifting
+    if day == None and (field_name == None or field_name.isnumeric() == True): # param shifting
         day = field_name
         field_name = player
         discord_id = ctx.message.author.id
