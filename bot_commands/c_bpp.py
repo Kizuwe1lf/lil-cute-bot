@@ -1,14 +1,13 @@
-from bot_commands.c_main import stuff
 from scripts import *
 
 
-async def commands_bpp(ctx, player):
+async def commands_bpp(ctx, player, request_obj):
     if player == None:
         await ctx.send('User Not Linked')
         return 0
 
     osu_username = player['osu_username']
-    get_best_scores = stuff.get_user_best1(osu_username)
+    get_best_scores = request_obj.get_user_best1(osu_username)
     get_user = stuff.get_user(osu_username)
 
     if not get_user:

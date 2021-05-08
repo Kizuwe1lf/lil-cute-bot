@@ -1,4 +1,3 @@
-from bot_commands.c_main import stuff
 from datetime import *
 from scripts import *
 import discord
@@ -30,15 +29,15 @@ def get_beatmap_status(beatmap_status):
     if beatmap_status == -2: return "Graveyard"
 
 
-async def commands_map(ctx, beatmap_id, mods: list = ['No Mod']):
+async def commands_map(ctx, request_obj, beatmap_id, mods: list = ['No Mod']):
     if beatmap_id == None:
-        beatmap_id = stuff.get_beatmap_id(ctx.channel.id)
+        beatmap_id = request_obj.get_beatmap_id(ctx.channel.id)
     if not beatmap_id:
         await ctx.send(f"Theres no ~~beatmap_id~~ in cache")
         return 0
 
-    get_beatmaps = stuff.get_beatmaps(beatmap_id, ctx.channel.id)
-    get_user = stuff.get_user(get_beatmaps[0]['creator'])
+    get_beatmaps = request_obj.get_beatmaps(beatmap_id, ctx.channel.id)
+    get_user = request_obj.get_user(get_beatmaps[0]['creator'])
     r_g_b = get_avg_colour_from_cover(get_beatmaps[0]['beatmapset_id'])
     e = discord.Embed(color=discord.colour.Colour.from_rgb(r_g_b[0], r_g_b[1], r_g_b[2]))
     if not get_user:

@@ -1,9 +1,8 @@
-from bot_commands.c_main import stuff
 from scripts import *
 
 
-async def commands_acc(ctx, count50, count100, mods:str = 'No Mod'):
-    beatmap_id = stuff.get_beatmap_id(ctx.channel.id)
+async def commands_acc(ctx, request_obj, count50, count100, mods:str = 'No Mod'):
+    beatmap_id = request_obj.get_beatmap_id(ctx.channel.id)
     mods_list = get_mod_list_from_mods_string(mods)
     mods_string = ''.join(mods_list)
 

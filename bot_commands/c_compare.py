@@ -1,19 +1,18 @@
-from bot_commands.c_main import stuff
 import discord
 from datetime import *
 from scripts import *
 import random
 
 
-async def commands_compare(ctx, player, bot):
+async def commands_compare(ctx, player, request_obj, bot):
     if player == None:
         await ctx.send('User Not Linked')
         return 0
 
     osu_username = player['osu_username']
-    beatmap_id = stuff.get_beatmap_id(ctx.channel.id)
-    get_user = stuff.get_user(osu_username)
-    get_scores = stuff.get_scores(osu_username, beatmap_id, ctx.channel.id)
+    beatmap_id = request_obj.get_beatmap_id(ctx.channel.id)
+    get_user = request_obj.get_user(osu_username)
+    get_scores = request_obj.get_scores(osu_username, beatmap_id, ctx.channel.id)
 
     if not beatmap_id:
         await ctx.send(f"Theres no ~~beatmap_id~~ in cache")
@@ -27,7 +26,7 @@ async def commands_compare(ctx, player, bot):
 
     page_counter = 1
     page_description = []
-    get_beatmaps = stuff.get_beatmaps(beatmap_id, ctx.channel.id)
+    get_beatmaps = request_obj.get_beatmaps(beatmap_id, ctx.channel.id)
     r_g_b = get_avg_colour_from_cover(get_beatmaps[0]['beatmapset_id'])
     flag_url = f"https://osu.ppy.sh/images/flags/{get_user[0]['country']}.png"
     e = discord.Embed(color=discord.colour.Colour.from_rgb(r_g_b[0], r_g_b[1], r_g_b[2]))

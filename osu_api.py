@@ -72,7 +72,7 @@ class OsuApiUrl:
             return []
 
 
-class GetStuff:
+class ApiRequest:
     def __init__(self):
         self.beatmap_id = {}
         self.api = OsuApiUrl()

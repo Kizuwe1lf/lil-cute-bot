@@ -1,4 +1,3 @@
-from bot_commands.c_main import stuff
 import discord
 from datetime import *
 from scripts import *
@@ -6,19 +5,19 @@ import numpy
 import random
 
 
-async def commands_osutop(ctx, player):
+async def commands_osutop(ctx, player, request_obj):
     if player == None:
         await ctx.send('User Not Linked')
         return 0
 
     osu_username = player['osu_username']
-    get_user = stuff.get_user(osu_username)
+    get_user = request_obj.get_user(osu_username)
 
     if not get_user:
         await ctx.send(f"~~{osu_username}~~ **was not found.**")
         return 0
 
-    get_best_scores = stuff.get_user_best1(osu_username)
+    get_best_scores = request_obj.get_user_best1(osu_username)
     flag_url = f"https://osu.ppy.sh/images/flags/{get_user[0]['country']}.png"
     avatar_url = f"https://a.ppy.sh/{get_user[0]['user_id']}?{random.randint(100000, 999999)}"
     profile_url = f"https://osu.ppy.sh/u/{get_user[0]['user_id']}"
@@ -32,7 +31,7 @@ async def commands_osutop(ctx, player):
         if int(get_best_scores[play_rank]['perfect']) == 0:
             player_combo_text = f"**{player_combo_text}**"
         score = get_score(get_best_scores[play_rank]['score'])
-        get_beatmaps = stuff.get_beatmaps_osutop_edition(get_best_scores[play_rank]['beatmap_id'])
+        get_beatmaps = request_obj.get_beatmaps_osutop_edition(get_best_scores[play_rank]['beatmap_id'])
         count = get_best_scores[play_rank]['countmiss'], get_best_scores[play_rank]['count50'], get_best_scores[play_rank]['count100'], get_best_scores[play_rank]['count300']
 
         mods_list = num_to_mod_list(get_best_scores[play_rank]['enabled_mods'])
@@ -49,14 +48,14 @@ async def commands_osutop(ctx, player):
     e.description = info
     await send_embed(ctx, e)
 
-async def commands_osutop_p(ctx, player, given_play): # get specific play in user_best (users top100)
+async def commands_osutop_p(ctx, player, request_obj, given_play): # get specific play in user_best (users top100)
     if player == None:
         await ctx.send('User Not Linked')
         return 0
 
     osu_username = player['osu_username']
-    get_best_scores = stuff.get_user_best1(osu_username)
-    get_user = stuff.get_user(osu_username)
+    get_best_scores = request_obj.get_user_best1(osu_username)
+    get_user = request_obj.get_user(osu_username)
 
     if not get_user:
         await ctx.send(f"~~{osu_username}~~ **was not found.**")
@@ -66,7 +65,7 @@ async def commands_osutop_p(ctx, player, given_play): # get specific play in use
         return 0
 
     beatmap_id = get_best_scores[given_play - 1]['beatmap_id']
-    get_beatmaps = stuff.get_beatmaps(beatmap_id, ctx.channel.id)
+    get_beatmaps = request_obj.get_beatmaps(beatmap_id, ctx.channel.id)
     e = discord.Embed(colour=ctx.message.author.colour)
     flag_url = f"https://osu.ppy.sh/images/flags/{get_user[0]['country']}.png"
     e.set_author(name=f"Top {given_play}. play for {get_user[0]['username']}\n{get_user[0]['pp_raw']}pp (#{get_user[0]['pp_rank']} {get_user[0]['country']}{get_user[0]['pp_country_rank']})", url=f"https://osu.ppy.sh/u/{get_user[0]['user_id']}", icon_url=flag_url)
@@ -103,14 +102,14 @@ async def commands_osutop_p(ctx, player, given_play): # get specific play in use
 
 
 
-async def commands_osutop_r(ctx, player): # get latest top plays
+async def commands_osutop_r(ctx, player, request_obj): # get latest top plays
     if player == None:
         await ctx.send('User Not Linked')
         return 0
 
     osu_username = player['osu_username']
-    old_best_scores = stuff.get_user_best1(osu_username)
-    get_user = stuff.get_user(osu_username)
+    old_best_scores = request_obj.get_user_best1(osu_username)
+    get_user = request_obj.get_user(osu_username)
 
     if not get_user:
         await ctx.send(f"~~{osu_username}~~ **was not found.**")
@@ -130,7 +129,7 @@ async def commands_osutop_r(ctx, player): # get latest top plays
     e.set_thumbnail(url=avatar_url)
     for play_rank in [0, 1, 2]:
         play_number = old_best_scores.index(get_best_scores[play_rank]) + 1
-        get_beatmaps = stuff.get_beatmaps_osutop_edition(get_best_scores[play_rank]['beatmap_id'])
+        get_beatmaps = request_obj.get_beatmaps_osutop_edition(get_best_scores[play_rank]['beatmap_id'])
         count = get_best_scores[play_rank]['countmiss'], get_best_scores[play_rank]['count50'], get_best_scores[play_rank]['count100'], get_best_scores[play_rank]['count300']
 
         mods_list = num_to_mod_list(get_best_scores[play_rank]['enabled_mods'])

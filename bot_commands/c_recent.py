@@ -1,18 +1,17 @@
-from bot_commands.c_main import stuff
 import discord
 from datetime import *
 from scripts import *
 import random
 
 
-async def commands_recent(ctx, player, update_bool, db_obj):
+async def commands_recent(ctx, player, request_obj, update_bool, db_obj):
     if player == None:
         await ctx.send('User Not Linked')
         return 0
 
     osu_username = player['osu_username']
-    get_user = stuff.get_user(osu_username)
-    get_recent = stuff.get_user_recent(osu_username)
+    get_user = request_obj.get_user(osu_username)
+    get_recent = request_obj.get_user_recent(osu_username)
     try_counter = 1
 
     if not get_user:
@@ -28,10 +27,10 @@ async def commands_recent(ctx, player, update_bool, db_obj):
         else:
             break
 
-    get_beatmaps = stuff.get_beatmaps(get_recent[0]['beatmap_id'], ctx.channel.id) # request
+    get_beatmaps = request_obj.get_beatmaps(get_recent[0]['beatmap_id'], ctx.channel.id) # request
 
     rank_text = "" # check if score on global leaderboards +1 request but its good
-    get_scores = stuff.get_global(get_recent[0]['beatmap_id'], "")
+    get_scores = request_obj.get_global(get_recent[0]['beatmap_id'], "")
     for x in range(len(get_scores)):
         if get_scores[x]['score'] == get_recent[0]['score'] and get_scores[x]['user_id'] == get_recent[0]['user_id']:
             rank_text = f"| Global**#{x+1}**"

@@ -24,11 +24,13 @@ from bot_commands.c_compare_server import commands_compare_server
 from bot_commands.c_roll import commands_roll
 from bot_commands.c_graph import commands_graph
 from bot_commands.c_help import commands_help
+from osu_api import ApiRequest
 from database import Database
 from scripts import get_osu_username_from_param, get_osu_username_for_player_tuple_elements
 
 # Hey!
 
+request_obj = ApiRequest()
 
 def get_prefix(ctx, message):
     db_obj = Database()
@@ -37,7 +39,6 @@ def get_prefix(ctx, message):
 
 bot = commands.Bot(command_prefix=get_prefix)
 bot.remove_command('help')
-
 
 @bot.command()
 @has_permissions(administrator=True)
@@ -101,24 +102,24 @@ async def leaveserver(ctx, rank):
 async def osu(ctx, player: str = None, *player_tuple):
     db_obj = Database()
     player, null = get_osu_username_from_param(ctx, player, db_obj)
-    await commands_osu(ctx, player)
+    await commands_osu(ctx, player, request_obj)
     for player in player_tuple:
         player = get_osu_username_for_player_tuple_elements(ctx, player, db_obj)
-        await commands_osu(ctx, player)
+        await commands_osu(ctx, player, request_obj)
 
 
 @bot.command(aliases=['r', 'rs'])
 async def recent(ctx, player: str = None):
     db_obj = Database()
     player, update_bool = get_osu_username_from_param(ctx, player, db_obj)
-    await commands_recent(ctx, player, update_bool, db_obj)
+    await commands_recent(ctx, player, request_obj, update_bool, db_obj)
 
 
 @bot.command(aliases=['compare'])
 async def c(ctx, player: str = None):
     db_obj = Database()
     player, null = get_osu_username_from_param(ctx, player, db_obj)
-    await commands_compare(ctx, player, bot)
+    await commands_compare(ctx, player, request_obj, bot)
 
 
 @bot.command()
@@ -144,11 +145,11 @@ async def osutop(ctx, player: str = None, command_mode: str = None, play_number:
     # i dont need same shifting on mode 'r' cause theres no another parameter in mode 'r'
 
     if command_mode == 'p':
-        await commands_osutop_p(ctx, player, play_number)
+        await commands_osutop_p(ctx, player, request_obj, play_number)
     elif param_player == 'r' or command_mode == 'r':
-        await commands_osutop_r(ctx, player)
+        await commands_osutop_r(ctx, player, request_obj)
     else:
-        await commands_osutop(ctx, player)
+        await commands_osutop(ctx, player, request_obj)
 
 
 @bot.command(aliases=['mapdata'])
@@ -160,7 +161,7 @@ async def map(ctx, beatmap_id: str = None, mods: str = 'No Mod'):
             mods = beatmap_id
             beatmap_id = None
 
-    await commands_map(ctx, beatmap_id, mods)
+    await commands_map(ctx, request_obj, beatmap_id, mods)
 
 
 @bot.command(aliases=['newtopplay'])
@@ -178,19 +179,19 @@ async def ntp(ctx, player, *pp_tuple):
             "osu_username" : player
         }
 
-    await commands_ntp(ctx, player, pp_tuple)
+    await commands_ntp(ctx, player, request_obj, pp_tuple)
 
 
 @bot.command(aliases=['bonuspp'])
 async def bpp(ctx, player: str = None):
     db_obj = Database()
     player, null = get_osu_username_from_param(ctx, player, db_obj)
-    await commands_bpp(ctx, player)
+    await commands_bpp(ctx, player, request_obj)
 
 
 @bot.command()
 async def acc(ctx, count50, count100, mod:str = 'No Mod'):
-    await commands_acc(ctx, count50, count100, mod)
+    await commands_acc(ctx, request_obj, count50, count100, mod)
 
 
 @bot.command()
@@ -207,7 +208,7 @@ async def globalleaderboards(ctx):
 @bot.command()
 async def link(ctx, osu_username: str = None):
     db_obj = Database()
-    await commands_link(ctx, osu_username, db_obj)
+    await commands_link(ctx, osu_username, request_obj, db_obj)
 
 @bot.command()
 async def unlink(ctx):
@@ -230,13 +231,13 @@ async def aliases(ctx):
 
 @bot.command(aliases=['global'])
 async def g(ctx, mods='No Mod'):
-    await commands_global(ctx, mods)
+    await commands_global(ctx, request_obj, mods)
 
 
 @bot.command(aliases=['compareserver'])
 async def cs(ctx):
     db_obj = Database()
-    await commands_compare_server(ctx, db_obj)
+    await commands_compare_server(ctx, request_obj, db_obj)
 
 @bot.command()
 async def roll(ctx, num=""):

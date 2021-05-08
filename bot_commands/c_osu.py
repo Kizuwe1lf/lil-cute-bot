@@ -1,20 +1,17 @@
-from bot_commands.c_main import stuff
 import discord
 import random
 from scripts import *
 
 
-async def commands_osu(ctx, player):
+async def commands_osu(ctx, player, request_obj):
     if player == None:
-        await ctx.send('User Not Linked')
-        return 0
+        return await ctx.send('User Not Linked')
 
     osu_username = player['osu_username']
-    get_user = stuff.get_user(osu_username) # request
+    get_user = request_obj.get_user(osu_username) # request
 
     if not get_user:
-        await ctx.send(f"~~{osu_username}~~ **was not found.**")
-        return 0
+        return await ctx.send(f"~~{osu_username}~~ **was not found.**")
 
     flag_url = f"https://osu.ppy.sh/images/flags/{get_user[0]['country']}.png"
     avatar_url = f"https://a.ppy.sh/{get_user[0]['user_id']}?{random.randint(100000, 999999)}"

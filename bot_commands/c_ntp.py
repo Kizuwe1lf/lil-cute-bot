@@ -1,4 +1,3 @@
-from bot_commands.c_main import stuff
 from scripts import round_func
 
 def get_list_of_pp(arr):
@@ -35,14 +34,14 @@ def get_ntps(pp_tuple, pp_list): # when len(given_tuple) > 1
     pp_list = sort_pp_list(pp_list)
     return pp_list, plays_added
 
-async def commands_ntp(ctx, player, pp_tuple):
+async def commands_ntp(ctx, player, request_obj, pp_tuple):
     if player == None:
         await ctx.send('User Not Linked')
         return 0
     osu_username = player['osu_username']
 
-    get_best_scores = stuff.get_user_best1(osu_username)
-    get_user = stuff.get_user(osu_username)
+    get_best_scores = request_obj.get_user_best1(osu_username)
+    get_user = request_obj.get_user(osu_username)
     if not get_user:
         await ctx.send(f"~~{osu_username}~~ **was not found.**")
         return 0

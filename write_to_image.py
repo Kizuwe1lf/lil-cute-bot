@@ -4,7 +4,6 @@ from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime
 from scripts import *
 from discord import File
-from bot_commands.c_main import stuff
 
 
 async def write_to_image(ctx, scores, get_beatmaps):
