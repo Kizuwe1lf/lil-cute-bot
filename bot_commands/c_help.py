@@ -26,7 +26,8 @@ async def commands_help(ctx, prefix, command_name, bot_user_name):
     elif command_name == 'osu':
         output += "Shows osu profile of given player\n"
         output += "Example Usages\n\n"
-        output += f"{prefix}osu osu_username\n\n"
+        output += f"{prefix}osu osu_username\n"
+        output += f"{prefix}osu osu_username1 osu_username2 osu_username3...\n\n"
         output += "instead of osu_username u can mention linked users or you just dont give any username for self use\n"
         output += f"Examples: {prefix}{command_name} @discord_user or {prefix}{command_name}"
 
@@ -126,6 +127,11 @@ async def commands_help(ctx, prefix, command_name, bot_user_name):
         output += "Description: Available line charts 'pp', 'rank', 'acc', 'pc', 'countryrank'\n"
         output += "instead of osu_username u can mention linked users or you just dont give any username for self use\n"
         output += f"Examples: {prefix}{command_name} @discord_user or {prefix}{command_name}"
+
+    elif command_name == "invite":
+        output += "Gives you a nice invite link\n"
+        output += "Example Usage\n\n"
+        output += f"{prefix}invite"
 
     else:
         return await ctx.send(f"Invalid Command Name Type {prefix}help for command list")
