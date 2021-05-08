@@ -49,7 +49,7 @@ async def setprefix(ctx, prefix):
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=discord.Game(name="osu!"))
+    await bot.change_presence(activity=discord.Game(name="osu! | >help"))
     print(f'Logged in as: {bot.user.name}\n')
     print(f'Server List ({len(bot.guilds)})\n')
     server_counter = 1
@@ -254,6 +254,11 @@ async def graph(ctx, player, field_name: str=None, day: str=None):
         discord_id = int(player.strip('<@!>'))
         player = db_obj.select_players_by_id(discord_id)['osu_username']
     await commands_graph(ctx, db_obj, player, field_name, day)
+
+@bot.command()
+async def invite(ctx):
+    inv_link = r"https://discord.com/api/oauth2/authorize?client_id=619588838075138058&permissions=388160&scope=bot"
+    await ctx.send(f"Zzzzz you are welcome <:xd:627098979766632458>\n{inv_link}")
 
 
 @bot.command()
