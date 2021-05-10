@@ -20,6 +20,11 @@ class Database():
         set = { "$set": user_data }
         self.users.update_one(where, set)
 
+    def update_data_with_discord_id(self, discord_id, user_data):
+        where = { "discord_id": user_data["discord_id"] }
+        set = {"$set": user_data }
+        self.users.update_one(where, set)
+
     def insert_data(self, user_data):
         self.users.insert_one(user_data)
         self.insert_history_collection(user_data)
