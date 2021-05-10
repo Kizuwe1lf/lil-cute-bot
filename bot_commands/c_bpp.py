@@ -8,7 +8,7 @@ async def commands_bpp(ctx, player, request_obj):
 
     osu_username = player['osu_username']
     get_best_scores = request_obj.get_user_best1(osu_username)
-    get_user = stuff.get_user(osu_username)
+    get_user = request_obj.get_user(osu_username)
 
     if not get_user:
         await ctx.send(f"~~{osu_username}~~ **was not found.**")
