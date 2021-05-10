@@ -29,15 +29,15 @@ from database import Database
 from scripts import get_osu_username_from_param, get_osu_username_for_player_tuple_elements
 
 # Hey!
-
 request_obj = ApiRequest()
 
 def get_prefix(ctx, message):
     db_obj = Database()
     return db_obj.get_prefix(message.guild.id)[0]
 
-
-bot = commands.Bot(command_prefix=get_prefix)
+intents = discord.Intents.default()
+intents.members = True
+bot = commands.Bot(command_prefix=get_prefix, intents=intents)
 bot.remove_command('help')
 
 @bot.command()
@@ -260,6 +260,18 @@ async def graph(ctx, player, field_name: str=None, day: str=None):
 async def invite(ctx):
     inv_link = r"https://discord.com/api/oauth2/authorize?client_id=619588838075138058&permissions=388160&scope=bot"
     await ctx.send(f"Zzzzz you are welcome <:xd:627098979766632458>\n{inv_link}")
+
+
+@bot.event
+async def on_member_remove(member):
+    db_obj = Database()
+    user_data = db_obj.select_players_by_id(member.id)
+    if user_data is not None:              # if user which left the guild is linked with bot
+        if len(user_data['servers']) == 1: # if this server was only link between them and bot
+            db_obj.delete_data(member.id)  # remove totally
+        else:
+            user_data['servers'].remove(member.guild.id) # just remove that guild from their's servers array
+            db_obj.update_data_with_discord_id(member.id, user_data)
 
 
 @bot.command()
