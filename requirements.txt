@@ -1,4 +1,4 @@
-discord.py==1.4.1
+discord.py==1.7.1
 requests==2.25.1
 numpy==1.19.5
 pyttanko==2.1.0
