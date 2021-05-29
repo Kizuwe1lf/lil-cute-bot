@@ -60,10 +60,7 @@ class OsuApiUrl:
             return []
 
     def get_global(self, beatmap_id, mods):
-        if mods != "":
-            get_scores_url = f"{self.beatmap_scores}?k={self.api_key}&b={beatmap_id}&mods={mods}&limit=100"
-        else:
-            get_scores_url = f"{self.beatmap_scores}?k={self.api_key}&b={beatmap_id}&limit=100"
+        get_scores_url = f"{self.beatmap_scores}?k={self.api_key}&b={beatmap_id}{mods}&limit=100"
         try:
             r = requests.get(get_scores_url)
             j = json.loads(r.content)
