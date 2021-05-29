@@ -11,7 +11,9 @@ async def commands_global(ctx, request_obj, mods):
         await ctx.send('Invalid Mods')
         return 0
 
-    mods_int = mod_to_num(mods)
+    mods_int = ""
+    if mods != 'No Mod':
+        mods_int = f"&mods={mod_to_num(mods)}"
     scores = request_obj.get_global(beatmap_id, mods_int)
     get_beatmaps = request_obj.get_beatmaps(beatmap_id, ctx.channel.id)
     await write_to_image(ctx, scores, get_beatmaps)
