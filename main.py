@@ -26,7 +26,7 @@ from bot_commands.c_graph import commands_graph
 from bot_commands.c_help import commands_help
 from osu_api import ApiRequest
 from database import Database
-from scripts import get_osu_username_from_param, get_osu_username_for_player_tuple_elements
+from scripts import get_osu_username_from_param, get_osu_username_for_player_tuple_elements, update_db_after_user_leave
 
 # Hey!
 request_obj = ApiRequest()
@@ -37,6 +37,7 @@ def get_prefix(ctx, message):
 
 intents = discord.Intents.default()
 intents.members = True
+intents.guilds = True
 bot = commands.Bot(command_prefix=get_prefix, intents=intents)
 bot.remove_command('help')
 
@@ -265,14 +266,13 @@ async def invite(ctx):
 @bot.event
 async def on_member_remove(member):
     db_obj = Database()
-    user_data = db_obj.select_players_by_id(member.id)
-    if user_data is not None:              # if user which left the guild is linked with bot
-        if len(user_data['servers']) == 1: # if this server was only link between them and bot
-            db_obj.delete_data(member.id)  # remove totally
-        else:
-            user_data['servers'].remove(member.guild.id) # just remove that guild from their's servers array
-            db_obj.update_data_with_discord_id(member.id, user_data)
+    update_db_after_user_leave(db_obj, member)
 
+@bot.event
+async def on_guild_remove(guild):
+    db_obj = Database()
+    for member in guild.members:
+        update_db_after_user_leave(db_obj, member)
 
 @bot.command()
 @commands.is_owner()
