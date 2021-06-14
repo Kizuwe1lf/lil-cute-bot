@@ -84,16 +84,18 @@ def num_to_mod_list(number):
     if   number & 1 << 2:   mod_list.append('TD')
     if   number & 1 << 3:   mod_list.append('HD')
     if   number & 1 << 4:   mod_list.append('HR')
-    if   number & 1 << 5:   mod_list.append('SD')
     if   number & 1 << 9:
         mod_list.append('NC')
     elif number & 1 << 6:
         mod_list.append('DT')
+    if   number & 1 << 14:
+        mod_list.append('PF')
+    elif   number & 1 << 5:
+        mod_list.append('SD')
     if   number & 1 << 7:   mod_list.append('RX')
     if   number & 1 << 8:   mod_list.append('HT')
     if   number & 1 << 10:  mod_list.append('FL')
     if   number & 1 << 12:  mod_list.append('SO')
-    if   number & 1 << 14:  mod_list.append('PF')
     if   number & 1 << 20:  mod_list.append('FI')
     if   number & 1 << 29:  mod_list.append('v2')
     return mod_list
@@ -107,7 +109,10 @@ def mod_to_num(mods: str):
     if   'TD' in mods:    total += 1 << 2
     if   'HD' in mods:    total += 1 << 3
     if   'HR' in mods:    total += 1 << 4
-    if   'SD' in mods:    total += 1 << 5
+    if   'PF' in mods:
+        total += 1 << 14
+    elif   'SD' in mods:
+        total += 1 << 5
     if   'NC' in mods:
         total += (( 1 << 9 ) + ( 1 << 6 ))
     elif 'DT' in mods:
@@ -116,7 +121,7 @@ def mod_to_num(mods: str):
     if   'HT' in mods:    total += 1 << 8
     if   'FL' in mods:    total += 1 << 10
     if   'SO' in mods:    total += 1 << 12
-    if   'PF' in mods:    total += 1 << 14
+
     if   'FI' in mods:    total += 1 << 20
     if   'v2' in mods:    total += 1 << 29
 
