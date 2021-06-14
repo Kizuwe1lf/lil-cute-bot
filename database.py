@@ -9,20 +9,15 @@ class Database():
     def __init__(self):
         load_dotenv(find_dotenv())
         cluster = MongoClient(os.getenv('MONGO_DB_STRING'))
-
+        
         db = cluster["lil_cute_db"]
         self.users = db["users_main"]
         self.user_history = db["users_history"] # for tracking data changes
         self.prefixes = db["prefixes"]
 
     def update_data(self, user_data):
-        where = { "osu_user_id": user_data["osu_user_id"] }
-        set = { "$set": user_data }
-        self.users.update_one(where, set)
-
-    def update_data_with_discord_id(self, discord_id, user_data):
         where = { "discord_id": user_data["discord_id"] }
-        set = {"$set": user_data }
+        set = { "$set": user_data }
         self.users.update_one(where, set)
 
     def insert_data(self, user_data):
