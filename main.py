@@ -56,7 +56,7 @@ async def on_ready():
     print(f'Server List ({len(bot.guilds)})\n')
     server_counter = 1
     for guild in bot.guilds:
-        print(f"{server_counter}. {guild.name}")
+        print(f"{server_counter}. {guild.name} {guild.id}")
         server_counter += 1
 
 
@@ -273,6 +273,16 @@ async def on_guild_remove(guild):
     db_obj = Database()
     for member in guild.members:
         update_db_after_user_leave(db_obj, member)
+        
+    channel = bot_get_channel(526881587682344982)
+    output = f'They kicked me out!\n{guild.name} - {guild.id}'
+    await channel.send(output)
+
+@bot.event
+async def on_guild_join(guild):
+    channel = bot_get_channel(526881587682344982)
+    output = f'I have a new home!\n{guild.name} - {guild.id}'
+    await channel.send(output)
 
 @bot.command()
 @commands.is_owner()
