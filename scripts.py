@@ -27,7 +27,7 @@ def get_map_completion(beatmap_id, total_hits):
     return round_func(map_completion)
 
 def calc(param):
-    calc_path = ["my_files/pp_calculator/PerformanceCalculator.dll"]
+    calc_path = ["dotnet", "my_files/pp_calculator/PerformanceCalculator.dll"]
     process = Popen(calc_path + param, stdout=PIPE)
     output = process.communicate()[0]
     return json.loads(output)
