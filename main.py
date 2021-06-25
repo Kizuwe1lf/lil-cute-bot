@@ -219,7 +219,7 @@ async def unlink(ctx):
 @bot.command()
 async def help(ctx, command_name: str = None):
     if command_name == None:
-        await ctx.send(file=File(r"my_files\help.png"))
+        await ctx.send(file=File(r"my_files/help.png"))
     else:
         await commands_help(ctx, ctx.prefix, command_name, bot.user.name)
 
@@ -227,7 +227,7 @@ async def help(ctx, command_name: str = None):
 
 @bot.command()
 async def aliases(ctx):
-    await ctx.send(file=File(r"my_files\aliases.png"))
+    await ctx.send(file=File(r"my_files/aliases.png"))
 
 
 @bot.command(aliases=['global'])
@@ -273,7 +273,7 @@ async def on_guild_remove(guild):
     db_obj = Database()
     for member in guild.members:
         update_db_after_user_leave(db_obj, member)
-        
+
     channel = bot_get_channel(526881587682344982)
     output = f'They kicked me out!\n{guild.name} - {guild.id}'
     await channel.send(output)
