@@ -4,9 +4,10 @@ from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime
 from scripts import *
 from discord import File
+import os
 
 
-async def write_to_image(ctx, scores, get_beatmaps):
+async def write_to_image(ctx, scores, get_beatmaps, comm_name):
     score_count = 8
     if len(scores) < 8:
         score_count = len(scores)
@@ -85,5 +86,7 @@ async def write_to_image(ctx, scores, get_beatmaps):
     draw = ImageDraw.Draw(footer)
     draw.text((15, 23), f"Beatmap by {get_beatmaps[0]['creator']}", font_colour, font=title_font)
     img.paste(footer, (0, position + 110))
-    img.save('my_files/global_materials/output.png')
-    await ctx.send(file=File('my_files/global_materials/output.png'))
+    img_path = f'my_files/{comm_name}{ctx.channel.id}.png'
+    img.save(img_path)
+    await ctx.send(file=File(img_path))
+    os.remove(img_path)
