@@ -18,4 +18,4 @@ async def commands_compare_server(ctx, request_obj, db_obj):
 
     scores = sorted(scores, key=lambda x:int(x['score']), reverse= True)
     get_beatmaps = request_obj.get_beatmaps(beatmap_id, ctx.channel.id)
-    await write_to_image(ctx, scores, get_beatmaps)
+    await write_to_image(ctx, scores, get_beatmaps, 'cs')

@@ -14,4 +14,4 @@ async def commands_global(ctx, request_obj, mods):
         mods_int = f"&mods={mod_to_num(mods)}"
     scores = request_obj.get_global(beatmap_id, mods_int)
     get_beatmaps = request_obj.get_beatmaps(beatmap_id, ctx.channel.id)
-    await write_to_image(ctx, scores, get_beatmaps)
+    await write_to_image(ctx, scores, get_beatmaps, 'global')
