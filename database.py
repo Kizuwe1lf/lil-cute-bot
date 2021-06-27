@@ -9,7 +9,7 @@ class Database():
     def __init__(self):
         load_dotenv(find_dotenv())
         cluster = MongoClient(os.getenv('MONGO_DB_STRING'))
-        
+
         db = cluster["lil_cute_db"]
         self.users = db["users_main"]
         self.user_history = db["users_history"] # for tracking data changes
@@ -96,5 +96,7 @@ class Database():
 
     def search_date(self, osu_username, day):
         first_day = datetime.now() - timedelta(day)
-        cursor = self.user_history.find({"osu_username": {'$regex' : osu_username, '$options' : 'i'}, "date": {"$gt": first_day}})
-        return cursor
+        query = {"osu_username": {'$regex' : osu_username, '$options' : 'i'}, "date": {"$gt": first_day}}
+        cursor = self.user_history.find(query)
+        count = self.user_history.count_documents(query)
+        return cursor, count
