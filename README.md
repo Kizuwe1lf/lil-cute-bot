@@ -14,7 +14,7 @@ Check [this](https://github.com/Kizuwe1lf/lil-cute-bot/blob/main/BUILD.md)
 ![x](https://1lf.s-ul.eu/hdTK0udoOk38n9l)
 
 see bot_commands/help.py for more info about commands\
-or simply use help command in discord\
+or simply use help command in discord
 
 Example Gif\
 ![x](https://1lf.s-ul.eu/UfSl1SV6HkJilWn)

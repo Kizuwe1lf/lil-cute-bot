@@ -32,21 +32,22 @@ BOT_TOKEN=            // discord bot token
 API_KEY=              // osu api key
 ```
 
-# CONSTANTS
+# Constants
 
-You might wanna change constants
+You might wanna change constants.
 
 ```
-main.py L#32, L#33
+main.py L#32       // bot invite link
+main.py L#33       // bot default channel id
 ```
 
 ## Emotes
 
 If you wanna fully build lil-cute-bot you need discord emotes.
-You have 2 way of getting lil-cute-bot emotes
+You have 2 way of getting lil-cute-bot emotes.
 
 ```
 Way 1 : Join my bot emote server download emotes and change emote strings in project (thats a lot of work)
 Way 2 : Contact me via discord or somethin else so i can invite your bot into my emote server
 ```
-Emote server invite [link](https://discord.gg/YcfRSmy8Jp)
+Emote server invite [link](https://discord.gg/YcfRSmy8Jp).
