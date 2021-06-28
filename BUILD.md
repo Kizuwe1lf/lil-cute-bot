@@ -32,6 +32,14 @@ BOT_TOKEN=            // discord bot token
 API_KEY=              // osu api key
 ```
 
+# CONSTANTS
+
+You might wanna change constants
+
+```
+main.py L#32, L#33
+```
+
 ## Emotes
 
 If you wanna fully build lil-cute-bot you need discord emotes.
