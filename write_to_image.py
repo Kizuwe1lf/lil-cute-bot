@@ -12,7 +12,7 @@ async def write_to_image(ctx, scores, get_beatmaps, comm_name):
     if len(scores) < 8:
         score_count = len(scores)
         if len(scores) == 0:
-            await ctx.send("There are no scores <:aquaCry:700623201880899604>")
+            await ctx.send("There are no scores <:aquacry:859121512924708935>")
             return 0
 
     height = 255 + (score_count * 110)

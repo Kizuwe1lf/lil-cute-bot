@@ -24,7 +24,7 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
     date_array = []
 
     if cursor_len == 0:
-        return await ctx.send(f'I could not find any data related to {osu_username}! Use more recent command so i can have some data <:hyperEvil:496683825859002368>')
+        return await ctx.send(f'I could not find any data related to {osu_username}! Use more recent command so i can have some data <:hyperevil:859121511859748864>')
 
     servers = cursor[cursor_len-1]['servers']
 
@@ -37,7 +37,7 @@ async def commands_graph(ctx, db_obj, osu_username, field_name_text, day):
 
     days = (date_array[-1] - date_array[0]).days
     if days < 7:
-        return await ctx.send('Not Enough Data! Use more recent command so i can have some data <:hyperEvil:496683825859002368>')
+        return await ctx.send('Not Enough Data! Use more recent command so i can have some data <:hyperevil:859121511859748864>')
     if abs(value_array[0] - value_array[-1]) < 2.1:
         return await ctx.send('Not Enough Change')
 

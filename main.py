@@ -29,6 +29,9 @@ from database import Database
 from scripts import get_osu_username_from_param, get_osu_username_for_player_tuple_elements, update_db_after_user_leave
 
 # Hey!
+BOT_DEFAULT_CHANNEL_ID = 526881587682344982
+BOT_INVITE_LINK = r"https://discord.com/api/oauth2/authorize?client_id=619588838075138058&permissions=388160&scope=bot"
+
 request_obj = ApiRequest()
 
 def get_prefix(ctx, message):
@@ -94,9 +97,9 @@ async def leaveserver(ctx, rank):
     rank = int(rank) - 1
     try:
         await bot.guilds[rank].leave()
-        await ctx.send("Done sir <:hug:627096635658338315>")
+        await ctx.send("Done sir <:hug:859121515450859540>")
     except:
-        await ctx.send("I cant <:sadIgnored:530917237406826496>")
+        await ctx.send("I cant <:sadignored:859121512119926794>")
 
 
 @bot.command()
@@ -259,8 +262,7 @@ async def graph(ctx, player, field_name: str=None, day: str=None):
 
 @bot.command()
 async def invite(ctx):
-    inv_link = r"https://discord.com/api/oauth2/authorize?client_id=619588838075138058&permissions=388160&scope=bot"
-    await ctx.send(f"Zzzzz you are welcome <:xd:627098979766632458>\n{inv_link}")
+    await ctx.send(f"Oi you are welcome bud <:xd:859121515210997770>\n{BOT_INVITE_LINK}")
 
 
 @bot.event
@@ -274,19 +276,19 @@ async def on_guild_remove(guild):
     for member in guild.members:
         update_db_after_user_leave(db_obj, member)
 
-    channel = bot_get_channel(526881587682344982)
+    channel = bot.get_channel(BOT_DEFAULT_CHANNEL_ID)
     output = f'They kicked me out!\n{guild.name} - {guild.id}'
     await channel.send(output)
 
 @bot.event
 async def on_guild_join(guild):
-    channel = bot_get_channel(526881587682344982)
+    channel = bot.get_channel(BOT_DEFAULT_CHANNEL_ID)
     output = f'I have a new home!\n{guild.name} - {guild.id}'
     await channel.send(output)
 
 @bot.command()
 @commands.is_owner()
-async def talkmyboi(ctx, channel_id=526881587682344982, *message):
+async def talkmyboi(ctx, channel_id, *message):
     channel = bot.get_channel(int(channel_id))
     output = ""
     for word in message:

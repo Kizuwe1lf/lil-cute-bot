@@ -5,6 +5,7 @@ How to build lil-cute-bot
 ```
 Python 3.6+ (with requirements.txt)
 Net Core 3.1+
+MongoDB Online DB
 ```
 
 ## MongoDB

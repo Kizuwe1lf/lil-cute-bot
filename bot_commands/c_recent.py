@@ -65,7 +65,7 @@ async def commands_recent(ctx, player, request_obj, update_bool, db_obj):
         player_combo_text = f"**{player_combo_text}**"
 
     if fc_pp == "" and pp_text == "":
-        pp_text = f"<:msmile:586586198588522519> **-{random.randint(100, 500)}**pp"
+        pp_text = f"<:msmile:859122777155960852> **-{random.randint(100, 500)}**pp"
 
     r_g_b = get_avg_colour_from_cover(get_beatmaps[0]['beatmapset_id'])  # get average rgb value from beatmap cover image
     e = discord.Embed(color=discord.colour.Colour.from_rgb(r_g_b[0], r_g_b[1], r_g_b[2]))
