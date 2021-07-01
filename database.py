@@ -33,8 +33,45 @@ class Database():
         return self.users.find_one(where)
 
     def select_players_by_server(self, server_id):
-        where = {"servers" : { "$in": [server_id] } }
-        return self.users.find(where)
+        players_of_specified_server = self.users.aggregate([
+        {
+            # Grouping the fields i need
+            "$group":
+            {
+                "_id": "$osu_username",
+                "discord_id": { "$max": "$discord_id"},
+                "osu_username": { "$max": "$osu_username" },
+                "osu_user_id" : { "$max": "$osu_user_id" },
+                "pp_rank" : { "$max": "$pp_rank" },
+                "pp_raw" : { "$max": "$pp_raw" },
+                "pp_country_rank" : { "$max": "$pp_country_rank" },
+                "accuracy" : { "$max": "$accuracy" },
+                "playcount" : { "$max": "$playcount" },
+                "country" : { "$max": "$country" },
+                "ranked_score" : { "$max": "$ranked_score" },
+                "total_score" : { "$max": "$total_score" },
+                "count300" : { "$max": "$count300" },
+                "count100" : { "$max": "$count100" },
+                "count50" : { "$max": "$count50" },
+                "servers" : { "$max": "$servers" }
+            }
+        },
+        {
+            # after $group parameter little ',' then Sorting rows
+            "$sort":
+            {
+                "pp_raw": -1
+            }
+        },
+        {
+            # then with $match parameter only querying players in specified server
+             "$match" :
+                {
+                    "servers" : { "$in": [server_id] }
+                }
+        }
+        ])
+        return players_of_specified_server
 
     def update_after_play(self, user_data):
         self.update_data(user_data)
@@ -45,7 +82,38 @@ class Database():
         self.user_history.insert_one(user_data)
 
     def select_everyone(self):
-        return self.users.find()
+        everyone = self.users.aggregate([
+        # Grouping the fields i need
+        {
+            "$group":
+            {
+                "_id": "$osu_username",
+                "discord_id": { "$max": "$discord_id"},
+                "osu_username": { "$max": "$osu_username" },
+                "osu_user_id" : { "$max": "$osu_user_id" },
+                "pp_rank" : { "$max": "$pp_rank" },
+                "pp_raw" : { "$max": "$pp_raw" },
+                "pp_country_rank" : { "$max": "$pp_country_rank" },
+                "accuracy" : { "$max": "$accuracy" },
+                "playcount" : { "$max": "$playcount" },
+                "country" : { "$max": "$country" },
+                "ranked_score" : { "$max": "$ranked_score" },
+                "total_score" : { "$max": "$total_score" },
+                "count300" : { "$max": "$count300" },
+                "count100" : { "$max": "$count100" },
+                "count50" : { "$max": "$count50" },
+                "servers" : { "$max": "$servers" }
+            }
+        },
+        # after $group parameter little ',' then Sorting rows
+        {
+            "$sort":
+            {
+                "pp_raw": -1
+            }
+        }])
+        return everyone
+
 
     def preparing_user_data_for_db_functions(self, get_user, discord_id, servers, server_id): # for first insert servers must be empty list
         if server_id not in servers:
