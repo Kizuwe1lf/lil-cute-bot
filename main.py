@@ -194,8 +194,8 @@ async def bpp(ctx, player: str = None):
 
 
 @bot.command()
-async def acc(ctx, count50, count100, mod:str = 'No Mod'):
-    await commands_acc(ctx, request_obj, count50, count100, mod)
+async def acc(ctx, count100, count50, mod:str = 'No Mod'):
+    await commands_acc(ctx, request_obj, count100, count50, mod)
 
 
 @bot.command()
