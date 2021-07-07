@@ -9,7 +9,7 @@ async def commands_help(ctx, prefix, command_name, bot_user_name):
         "If you wanna change last specified beatmap simply use {prefix}map command\n" \
         "Example Usages\n\n" \
         f"{prefix}acc 5 4\n" \
-        f"{prefix}acc 5 4 hddt"
+        f"{prefix}acc 5 4 hddt```"
 
     elif command_name == 'link':
         output = "```Links your osu account to your discord account\n" \
