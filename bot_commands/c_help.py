@@ -5,10 +5,11 @@ async def commands_help(ctx, prefix, command_name, bot_user_name):
 
     if command_name == 'acc':
         output = "```Shows pp value for last specified beatmap\n" \
+        "Parameters : 100count, 50count, mods(optional)"
         "If you wanna change last specified beatmap simply use {prefix}map command\n" \
         "Example Usages\n\n" \
-        f"{prefix}acc 0 35 hddt" \
-        f"{prefix}acc 5 4```"
+        f"{prefix}acc 5 4\n" \
+        f"{prefix}acc 5 4 hddt"
 
     elif command_name == 'link':
         output = "```Links your osu account to your discord account\n" \
