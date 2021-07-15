@@ -256,14 +256,16 @@ def get_mod_list_from_mods_string(mods):
 def round_func(val): # rounds with 2 dec ex: 3 = 3.00 ---- 3.5556 = 3.55
     return f"{float(val):0.2f}"
 
-def update_db_after_user_leave(db_obj, member): # this func triggers when member kicked/left or when bot removed from guild (with loop)
-    user_data = db_obj.select_players_by_id(member.id)
-    if user_data is not None:              # if user which left the guild is linked with bot
-        if len(user_data['servers']) == 1: # if this server was only link between them and bot
-            db_obj.delete_data(member.id)  # remove totally
-        else:
-            user_data['servers'].remove(member.guild.id) # just remove that guild from their's servers array
-            db_obj.update_data_with_discord_id(member.id, user_data)
+def update_db_after_user_leave(db_obj, member, guild_id): # this func triggers when member kicked/left or when bot removed from guild
+    if member is None: return # if theres no user quitw
+
+    if len(member['servers']) == 1: # if this server was only link between them and bot
+        db_obj.delete_data(member['discord_id'])  # remove totally
+    else:
+        member['servers'].remove(guild_id) # just remove that guild from their's servers array and update row
+        member.pop('_id') # _id is not mutable have to pop it
+        db_obj.update_data(member)
+    print('did the work for', member['osu_username'])
 
 async def send_embed(ctx, e):
     await ctx.send(content=None, embed=e)
