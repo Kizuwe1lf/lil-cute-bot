@@ -268,14 +268,15 @@ async def invite(ctx):
 @bot.event
 async def on_member_remove(member):
     db_obj = Database()
-    update_db_after_user_leave(db_obj, member)
+    linked_member = db_obj.select_players_by_id(member.id)
+    update_db_after_user_leave(db_obj, linked_member, member.guild.id)
 
 @bot.event
 async def on_guild_remove(guild):
     db_obj = Database()
-    for member in guild.members:
-        update_db_after_user_leave(db_obj, member)
-
+    linked_members = db_obj.select_players_by_server(guild.id)
+    for linked_member in linked_members:
+        update_db_after_user_leave(db_obj, linked_member, guild.id)
     channel = bot.get_channel(BOT_DEFAULT_CHANNEL_ID)
     output = f'They kicked me out!\n{guild.name} - {guild.id}'
     await channel.send(output)
