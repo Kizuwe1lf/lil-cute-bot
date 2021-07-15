@@ -265,6 +265,10 @@ def update_db_after_user_leave(db_obj, member, guild_id): # this func triggers w
         member['servers'].remove(guild_id) # just remove that guild from their's servers array and update row
         member.pop('_id') # _id is not mutable have to pop it
         db_obj.update_data(member)
+<<<<<<< HEAD
+=======
+    print('did the work for', member['osu_username'])
+>>>>>>> d7096d83f1b17484e5152aeae76cc29c0c145732
 
 async def send_embed(ctx, e):
     await ctx.send(content=None, embed=e)
