@@ -7,7 +7,7 @@ from PIL import Image
 
 
 def get_beatmap_path(beatmap_id):
-    pathname = f'my_files/beatmap_folder/{beatmap_id}'
+    pathname = f'my_files/beatmap_folder/{beatmap_id}.osu'
     if path.exists(pathname) is False:
         return download_beatmaps(beatmap_id, pathname)
     else:
