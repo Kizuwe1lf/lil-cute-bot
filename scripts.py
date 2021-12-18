@@ -28,7 +28,7 @@ def get_map_completion(beatmap_id, total_hits):
 
 def calc(param):
     calc_path = ["dotnet", "my_files/pp_calculator/PerformanceCalculator.dll"]
-    process = Popen(calc_path + param, stdout=PIPE)
+    process = Popen(calc_path + param + ["-j"], stdout=PIPE)
     output = process.communicate()[0]
     return json.loads(output)
 
@@ -36,25 +36,44 @@ def get_difficulty(beatmap_id, mods_list):
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['difficulty', bmap_path]
     param = add_mods_to_param_for_calc(param, mods_list)
-    return calc(param)['sr']
+    return round(calc(param)['results'][0]['attributes']['star_rating'], 2)
 
 def get_pp(beatmap_id, mods_list, maxcombo, count): # count has [miss, 50, 100, 300] counts
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['simulate', 'osu', bmap_path, f'-c {maxcombo}', f'-X {count[0]}', f'-M {count[1]}', f'-G {count[2]}']
     param = add_mods_to_param_for_calc(param, mods_list)
-    return calc(param)
+    calc_resp = calc(param)
+
+    output = dict()
+    output['pp'] = round(calc_resp['pp'])
+    output['accuracy'] = round(calc_resp['score']['accuracy'], 2)
+
+    return output
 
 def get_if_fc_pp(beatmap_id, mods_list, count):
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['simulate', 'osu', bmap_path, f'-M {count[1]}', f'-G {count[2]}'] #excluding misses
     param = add_mods_to_param_for_calc(param, mods_list)
-    return calc(param)
+
+    calc_resp = calc(param)
+
+    output = dict()
+    output['pp'] = round(calc_resp['pp'])
+    output['accuracy'] = round(calc_resp['score']['accuracy'], 2)
+    return output
 
 def get_beatmap_data(beatmap_id, mods_list):
     bmap_path = get_beatmap_path(beatmap_id)
     param = ['difficulty', bmap_path]
     param = add_mods_to_param_for_calc(param, mods_list)
-    return calc(param)
+    calc_resp = calc(param)
+
+    output = dict()
+    output['sr'] = round(calc_resp['results'][0]['attributes']['star_rating'], 2)
+    output['aimsr'] = round(calc_resp['results'][0]['attributes']['aim_strain'], 2)
+    output['speedsr'] = round(calc_resp['results'][0]['attributes']['speed_strain'], 2)
+    output['od'] = round(calc_resp['results'][0]['attributes']['overall_difficulty'], 2)
+    return output 
 
 def get_if_fc_pp_text(pp):
     return f"IF FC : **{pp}**pp |"
