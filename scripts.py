@@ -45,7 +45,7 @@ def get_pp(beatmap_id, mods_list, maxcombo, count): # count has [miss, 50, 100, 
     calc_resp = calc(param)
 
     output = dict()
-    output['pp'] = round(calc_resp['pp'])
+    output['pp'] = round(calc_resp['performance_attributes']['pp'])
     output['accuracy'] = round(calc_resp['score']['accuracy'], 2)
 
     return output
@@ -58,7 +58,7 @@ def get_if_fc_pp(beatmap_id, mods_list, count):
     calc_resp = calc(param)
 
     output = dict()
-    output['pp'] = round(calc_resp['pp'])
+    output['pp'] = round(calc_resp['performance_attributes']['pp'])
     output['accuracy'] = round(calc_resp['score']['accuracy'], 2)
     return output
 
